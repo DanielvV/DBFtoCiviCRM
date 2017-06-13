@@ -12,6 +12,9 @@ encoding='CP437'
 function main () {
   step$1 2>&1 | grep -v 'Using a password on the command line interface can be insecure.'
 }
+function step () {
+  echo Please specify step number
+}
 function step1 () {
 echo Create functions, tables and indexes
 createfunctions
