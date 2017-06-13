@@ -5,7 +5,7 @@
 # https://www.experts-exchange.com/articles/1250/3-Ways-to-Speed-Up-MySQL.html
 # https://stackoverflow.com/a/1671056 (Can MySQL replace multiple characters?)
 host='localhost'
-user='civicrm'
+user='root'
 pass=''
 database='dbasetocivicrm'
 encoding='CP437'
