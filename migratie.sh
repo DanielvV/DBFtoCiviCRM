@@ -12,7 +12,17 @@ encoding='CP437'
 from=10
 till=100000
 function main () {
-  step$1 2>&1 | grep -v 'Using a password on the command line interface can be insecure.'
+  step$1
+}
+function mysqlquery () {
+  echo mysqlquery...
+  mysql -h $host \
+        -u $user \
+        -p$pass \
+        $database \
+        --defaults-extra-file /root/.my.cnf \
+        -e "$1;" \
+        2>&1 | grep -v 'Using a password on the command line interface can be insecure.'
 }
 function step () {
   echo Please specify step number
@@ -270,14 +280,6 @@ echo Drop indexes, tables and functions
 dropindexes
 droptables
 dropfunctions
-}
-function mysqlquery () {
-  echo mysqlquery...
-  mysql -h $host \
-        -u $user \
-        -p$pass \
-        $database \
-        -e "$1;"
 }
 function dropindexes () {
   echo dropindexes...
