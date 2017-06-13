@@ -9,6 +9,8 @@ user='civicrm'
 pass=''
 database='dbasetocivicrm'
 encoding='CP437'
+from=10
+till=100000
 function main () {
   step$1 2>&1 | grep -v 'Using a password on the command line interface can be insecure.'
 }
@@ -84,6 +86,7 @@ eaJOIN(6)
 ibJOIN(5)
 ,\"
 WHERE   ass.verwijderd  = 0
+AND     ass.relatienr BETWEEN $from AND $till
 \"
 )
 ;
@@ -119,8 +122,11 @@ EXECUTE query2
 echo
 echo Delete contacts and create them again
 mysqlquery "
-DELETE FROM civicrm.civicrm_contact
-WHERE id BETWEEN 2 AND 100000000
+DELETE
+FROM  civicrm.civicrm_contact
+WHERE id
+        BETWEEN $from
+        AND     $till
 ;
 INSERT INTO civicrm.civicrm_contact(  id
             ,                         contact_type
@@ -147,14 +153,14 @@ mysqlquery "
 DELETE
 FROM  civicrm.civicrm_log
 WHERE entity_id
-        BETWEEN 1
-        AND     100000000
+        BETWEEN $from
+        AND     $till
 ;
 DELETE
 FROM  civicrm.civicrm_note
 WHERE contact_id
-        BETWEEN 1
-        AND     100000000
+        BETWEEN $from
+        AND     $till
 ;
 "
 echo
