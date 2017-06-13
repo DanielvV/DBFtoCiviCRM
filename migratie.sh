@@ -16,11 +16,10 @@ function main () {
 }
 function mysqlquery () {
   echo mysqlquery...
+#        -p$pass \
   mysql -h $host \
         -u $user \
-        -p$pass \
         $database \
-        --defaults-file /root/.my.cnf \
         -e "$1;" \
         2>&1 | grep -v 'Using a password on the command line interface can be insecure.'
 }
