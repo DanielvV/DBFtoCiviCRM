@@ -1,9 +1,9 @@
 #!/bin/bash
-#SELECT * FROM dbasetocivicrm.testimport1
 # Code gebaseerd op:
 # https://stackoverflow.com/a/14579117 (Coalesce equivalent for nth not null value - MySQL)
 # https://www.experts-exchange.com/articles/1250/3-Ways-to-Speed-Up-MySQL.html
 # https://stackoverflow.com/a/1671056 (Can MySQL replace multiple characters?)
+#SELECT * FROM dbasetocivicrm.testimport1 WHERE Contactnummer BETWEEN 10 AND 100000
 host='localhost'
 user='root'
 pass=''
@@ -36,6 +36,7 @@ echo Delete nonfunctional rows
 mysqlquery "
 DELETE FROM dbasetocivicrm.ASS
 WHERE       relatienr=''
+OR          relatienr=6631
 ;
 "
 echo
