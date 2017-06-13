@@ -3,14 +3,14 @@
 # https://stackoverflow.com/a/14579117 (Coalesce equivalent for nth not null value - MySQL)
 # https://www.experts-exchange.com/articles/1250/3-Ways-to-Speed-Up-MySQL.html
 # https://stackoverflow.com/a/1671056 (Can MySQL replace multiple characters?)
-#SELECT * FROM dbasetocivicrm.testimport1 WHERE Contactnummer BETWEEN 10 AND 100000
+#SELECT * FROM dbasetocivicrm.testimport1
 host='localhost'
 user='root'
 pass=''
 database='dbasetocivicrm'
 encoding='CP437'
 from=10
-till=100000
+till=100000000
 function main () {
   step$1
 }
