@@ -3,7 +3,6 @@
 # https://stackoverflow.com/a/14579117 (Coalesce equivalent for nth not null value - MySQL)
 # https://www.experts-exchange.com/articles/1250/3-Ways-to-Speed-Up-MySQL.html
 # https://stackoverflow.com/a/1671056 (Can MySQL replace multiple characters?)
-#SELECT * FROM dbasetocivicrm.testimport1
 host='localhost'
 user='root'
 pass=''
@@ -27,8 +26,9 @@ function step () {
   echo Please specify step number
 }
 function step1 () {
-echo Create functions, tables and indexes
+echo Create functions, procedures, tables and indexes
 createfunctions
+createprocedures
 createtables
 createindexes
 echo
@@ -37,7 +37,6 @@ mysqlquery "
 DELETE FROM dbasetocivicrm.ASS
 WHERE       relatienr=''
 OR          relatienr=6631
-;
 "
 echo
 echo Do the first import query
@@ -99,18 +98,20 @@ WHERE   ass.verwijderd  = 0
 AND     ass.relatienr BETWEEN $from AND $till
 \"
 )
-;
+"
+mysqlquery "
 PREPARE query1
 FROM   @query1
-;
+"
+mysqlquery "
 EXECUTE query1
-;
 "
 echo
 echo Do the second import query
 mysqlquery "
 DROP TABLE IF EXISTS dbasetocivicrm.testimport1
-;
+"
+mysqlquery "
 SET @query2 = CONCAT(\"
 CREATE TABLE testimport1 AS
 SELECT *
@@ -122,12 +123,13 @@ SELECTseparate(0, 1, 'ea')
 FROM dbasetocivicrm.tempimport importtable
 \"
 )
-;
+"
+mysqlquery "
 PREPARE query2
 FROM   @query2
-;
+"
+mysqlquery "
 EXECUTE query2
-;
 "
 echo
 echo Delete contacts and create them again
@@ -137,7 +139,8 @@ FROM  civicrm.civicrm_contact
 WHERE id
         BETWEEN $from
         AND     $till
-;
+"
+mysqlquery "
 INSERT INTO civicrm.civicrm_contact(  id
             ,                         contact_type
             )
@@ -145,33 +148,28 @@ SELECT  Contactnummer
 ,       'Individual'
 FROM  dbasetocivicrm.testimport1
 WHERE Contactnummer != 1
-;
 "
 echo
-echo Drop indexes, tables and functions
+echo
+echo Drop indexes, tables, procedures and functions
 dropindexes
 droptables
+dropprocedures
 dropfunctions
 }
 function step2 () {
-echo Create functions and indexes
+echo Create functions, procedures and indexes
 createfunctions
+createprocedures
 createindexes
 echo
-echo Delete some rows from log en note
+echo Delete some rows from log
 mysqlquery "
 DELETE
 FROM  civicrm.civicrm_log
 WHERE entity_id
         BETWEEN $from
         AND     $till
-;
-DELETE
-FROM  civicrm.civicrm_note
-WHERE contact_id
-        BETWEEN $from
-        AND     $till
-;
 "
 echo
 echo Update created_date and modified_date on all contacts
@@ -189,7 +187,6 @@ WHERE   Gemaakt != '1970-01-01'
 ON      DUPLICATE KEY
 UPDATE  created_date  = Gemaakt
 ,       modified_date = Wijzigingsdatum
-;
 "
 echo
 echo Insert modified_date for all contacts in log
@@ -209,11 +206,17 @@ SELECT  'civicrm_contact'
 ,       Wijziger
 ,       Wijzigingsdatum
 FROM    dbasetocivicrm.testimport1
-;
 "
 echo
 echo Create tables
 createtables
+echo
+echo Delete notes from note
+mysqlquery "
+DELETE
+FROM  civicrm.civicrm_note
+WHERE contact_id
+"
 echo
 echo Create notes in note
 mysqlquery "
@@ -253,7 +256,6 @@ WHERE   SUBSTR( hfnotie.sleutel
         ,       1
         ,       3
         ) = 'ass'
-;
 "
 echo
 echo Insert modified_date for all notes in log
@@ -273,12 +275,34 @@ SELECT  f1
 ,       mutd
 FROM    dbasetocivicrm.tempnotitie  tempnotitie
 WHERE   tempnotitie.mutd != '1970-01-01'
-;
 "
 echo
-echo Drop indexes, tables and functions
+echo Delete bankaccounts
+mysqlquery "
+DELETE
+FROM  civicrm.civicrm_bank_account
+"
+echo
+echo Delete bankaccount references
+mysqlquery "
+DELETE
+FROM  civicrm.civicrm_bank_account_reference
+"
+echo
+echo Create bankaccounts
+mysqlquery "
+CALL INSERT_BANK_ACCOUNTS(5)
+"
+echo
+echo Create bankaccount references
+mysqlquery "
+CALL INSERT_BANK_ACCOUNT_REFERENCES(5)
+"
+echo
+echo Drop indexes, tables, procedures and functions
 dropindexes
 droptables
+dropprocedures
 dropfunctions
 }
 function dropindexes () {
@@ -289,25 +313,27 @@ function dropindexes () {
   ,                     'ASS'
   ,                     'ASS_FIELD1'
   )
-  ;
+  "
+  mysqlquery "
   CALL
   DROP_INDEX_IF_EXISTS( 'dbasetocivicrm'
   ,                     'VMSLREL'
   ,                     'VMSLREL_FIELD1'
   )
-  ;
+  "
+  mysqlquery "
   CALL
   DROP_INDEX_IF_EXISTS( 'dbasetocivicrm'
   ,                     'VMSLREL'
   ,                     'VMSLREL_FIELD1_2_6'
   )
-  ;
+  "
+  mysqlquery "
   CALL
   DROP_INDEX_IF_EXISTS( 'dbasetocivicrm'
   ,                     'testimport1'
   ,                     'testimport1_FIELD1'
   )
-  ;
   "
 }
 function createindexes () {
@@ -315,41 +341,40 @@ function createindexes () {
   echo createindexes...
   mysqlquery "
   ALTER
-  TABLE ASS
+  TABLE dbasetocivicrm.ASS
   ADD
   INDEX ASS_FIELD1 (  relatienr
         )
-  ;
+  "
+  mysqlquery "
   ALTER
-  TABLE VMSLREL
+  TABLE dbasetocivicrm.VMSLREL
   ADD
   INDEX VMSLREL_FIELD1 (  relatienr
         )
-  ;
+  "
+  mysqlquery "
   ALTER
-  TABLE VMSLREL
+  TABLE dbasetocivicrm.VMSLREL
   ADD
   INDEX VMSLREL_FIELD1_2_6 (  relatienr
         ,                     sleutelcd
         ,                     volgnummer
         )
-  ;
+  "
+  mysqlquery "
   ALTER
   TABLE dbasetocivicrm.testimport1
   ADD
   INDEX testimport1_FIELD1 (Contactnummer)
-  ;
   "
 }
 function droptables () {
   echo droptables...
   mysqlquery "
-  DROP TABLE IF EXISTS dbasetocivicrm.tempopc
-  ;
-  DROP TABLE IF EXISTS dbasetocivicrm.tempnotitie
-  ;
-  DROP TABLE IF EXISTS dbasetocivicrm.tempimport
-  ;
+  DROP TABLE IF EXISTS dbasetocivicrm.tempopc;
+  DROP TABLE IF EXISTS dbasetocivicrm.tempnotitie;
+  DROP TABLE IF EXISTS dbasetocivicrm.tempimport;
   "
 }
 function createtables () {
@@ -366,7 +391,8 @@ function createtables () {
   ,       ( 'JBU'
           , 1
           )
-  ;
+  "
+  mysqlquery "
   CREATE
   TABLE   dbasetocivicrm.tempnotitie
   AS
@@ -401,12 +427,19 @@ function createtables () {
           ,       1
           ,       3
           ) = 'ass'
-  ;
   "
 }
-function createfunctions () {
-  dropfunctions
-  echo createfunctions...
+function dropprocedures () {
+  echo dropprocedures...
+  mysqlquery "
+  DROP PROCEDURE IF EXISTS DROP_INDEX_IF_EXISTS;
+  DROP PROCEDURE IF EXISTS INSERT_BANK_ACCOUNTS;
+  DROP PROCEDURE IF EXISTS INSERT_BANK_ACCOUNT_REFERENCES;
+  "
+}
+function createprocedures () {
+  dropprocedures
+  echo createprocedures...
   mysqlquery "
   DELIMITER //
   CREATE PROCEDURE DROP_INDEX_IF_EXISTS (tblSchema VARCHAR(64),tblName VARCHAR(64),ndxName VARCHAR(64))
@@ -427,6 +460,132 @@ function createfunctions () {
       END IF;
   END
   //
+  CREATE PROCEDURE INSERT_BANK_ACCOUNTS (x INT)
+  BEGIN
+      DECLARE i INT DEFAULT 0;
+      DECLARE SQLStatement VARCHAR(8192);
+      SET SQLStatement = '
+        INSERT INTO civicrm.civicrm_bank_account (  id
+        ,                                           created_date
+        ,                                           modified_date
+        ,                                           data_raw
+        ,                                           data_parsed
+        ,                                           contact_id
+        )
+      ';
+      loop1: LOOP
+        SET i := i + 1;
+        SET SQLStatement = CONCAT(SQLStatement, \"
+          SELECT    CONCAT( Contactnummer
+                    ,       \",i,\"
+                    )
+          ,         Gemaakt
+          ,         Wijzigingsdatum
+          ,         '{}'
+          ,         CONCAT( '{\\\"BIC\\\":\\\"'
+                    ,       bic\",i,\"
+                    ,       '\\\"}'
+                    )
+          ,         Contactnummer
+          FROM      dbasetocivicrm.testimport1
+          WHERE NOT (   iban\",i,\" IS  NULL
+                    OR  iban\",i,\" =   ''
+                    OR  bic\",i,\"  IS  NULL
+                    OR  bic\",i,\"  =   ''
+                    )
+          UNION ALL
+          SELECT    CONCAT( Contactnummer
+                    ,       \",i,\"
+                    )
+          ,         Gemaakt
+          ,         Wijzigingsdatum
+          ,         '{}'
+          ,         '{}'
+          ,         Contactnummer
+          FROM      dbasetocivicrm.testimport1
+          WHERE     (   NOT (   iban\",i,\" IS  NULL
+                            OR  iban\",i,\" =   ''
+                            )
+                    )
+                    AND (   bic\",i,\"  IS  NULL
+                        OR  bic\",i,\"  =   ''
+                        )
+        \");
+        IF i < x THEN
+          SET SQLStatement = CONCAT(SQLStatement, \"
+            UNION ALL
+          \");
+          ITERATE loop1;
+        END IF;
+        LEAVE loop1;
+      END LOOP loop1;
+      SET @SQLStmt = SQLStatement;
+      PREPARE s FROM @SQLStmt;
+      EXECUTE s;
+      DEALLOCATE PREPARE s;
+  END
+  //
+  CREATE PROCEDURE INSERT_BANK_ACCOUNT_REFERENCES (x INT)
+  BEGIN
+      DECLARE i INT DEFAULT 0;
+      DECLARE SQLStatement VARCHAR(8192);
+      SET SQLStatement = '
+        INSERT INTO civicrm.civicrm_bank_account_reference (  reference
+        ,                                                     reference_type_id
+        ,                                                     ba_id
+        )
+      ';
+      loop1: LOOP
+        SET i := i + 1;
+        SET SQLStatement = CONCAT(SQLStatement, \"
+          SELECT    iban\",i,\"
+          ,         872
+          ,         bank_account.id
+          FROM      dbasetocivicrm.testimport1    testimport1
+          INNER
+          JOIN      civicrm.civicrm_bank_account  bank_account
+          ON        CONCAT( testimport1.Contactnummer
+                    ,       \",i,\"
+                    ) = bank_account.id
+          WHERE NOT (   iban\",i,\" IS  NULL
+                    OR  iban\",i,\" =   ''
+                    )
+        \");
+        IF i < x THEN
+          SET SQLStatement = CONCAT(SQLStatement, \"
+            UNION ALL
+          \");
+          ITERATE loop1;
+        END IF;
+        LEAVE loop1;
+      END LOOP loop1;
+      SET @SQLStmt = SQLStatement;
+      PREPARE s FROM @SQLStmt;
+      EXECUTE s;
+      DEALLOCATE PREPARE s;
+  END
+  //
+  DELIMITER ;
+  "
+}
+function dropfunctions () {
+  echo dropfunctions...
+  mysqlquery "
+  DROP FUNCTION IF EXISTS SPLIT_STR;
+  DROP FUNCTION IF EXISTS SELECTseparate;
+  DROP FUNCTION IF EXISTS tnSELECT;
+  DROP FUNCTION IF EXISTS eaSELECT;
+  DROP FUNCTION IF EXISTS ibSELECT;
+  DROP FUNCTION IF EXISTS tnJOIN;
+  DROP FUNCTION IF EXISTS eaJOIN;
+  DROP FUNCTION IF EXISTS ibJOIN;
+  "
+}
+function createfunctions () {
+  dropfunctions
+  echo createfunctions...
+  mysqlquery "
+  DELIMITER //
   CREATE FUNCTION SPLIT_STR(  x     VARCHAR(255)
                   ,           delim VARCHAR(12)
                   ,           pos   INT
@@ -587,20 +746,6 @@ function createfunctions () {
   END
   //
   DELIMITER ;
-  "
-}
-function dropfunctions () {
-  echo dropfunctions...
-  mysqlquery "
-  DROP PROCEDURE IF EXISTS DROP_INDEX_IF_EXISTS;
-  DROP FUNCTION IF EXISTS SPLIT_STR;
-  DROP FUNCTION IF EXISTS SELECTseparate;
-  DROP FUNCTION IF EXISTS tnSELECT;
-  DROP FUNCTION IF EXISTS eaSELECT;
-  DROP FUNCTION IF EXISTS ibSELECT;
-  DROP FUNCTION IF EXISTS tnJOIN;
-  DROP FUNCTION IF EXISTS eaJOIN;
-  DROP FUNCTION IF EXISTS ibJOIN;
   "
 }
 main $1
