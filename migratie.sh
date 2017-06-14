@@ -3,6 +3,7 @@
 # https://stackoverflow.com/a/14579117 (Coalesce equivalent for nth not null value - MySQL)
 # https://www.experts-exchange.com/articles/1250/3-Ways-to-Speed-Up-MySQL.html
 # https://stackoverflow.com/a/1671056 (Can MySQL replace multiple characters?)
+# https://forum.civicrm.org/index.php?topic=7567.0 (Import date created and/or date modified?)
 #SELECT * FROM dbasetocivicrm.testimport1
 host='localhost'
 user='root'
