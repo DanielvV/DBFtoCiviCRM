@@ -107,6 +107,9 @@ FROM   @query1
 EXECUTE query1
 "
 echo
+echo Create indexes again
+createindexes
+echo
 echo Do the second import query
 mysqlquery "
 DROP TABLE IF EXISTS dbasetocivicrm.testimport1
