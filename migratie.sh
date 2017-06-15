@@ -100,12 +100,10 @@ WHERE   ass.verwijderd  = 0
 AND     ass.relatienr BETWEEN $from AND $till
 \"
 )
-"
-mysqlquery "
+;
 PREPARE query1
 FROM   @query1
-"
-mysqlquery "
+;
 EXECUTE query1
 "
 echo
@@ -125,12 +123,10 @@ SELECTseparate(0, 1, 'ea')
 FROM dbasetocivicrm.tempimport importtable
 \"
 )
-"
-mysqlquery "
+;
 PREPARE query2
 FROM   @query2
-"
-mysqlquery "
+;
 EXECUTE query2
 "
 echo
