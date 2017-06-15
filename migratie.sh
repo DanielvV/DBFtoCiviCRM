@@ -44,7 +44,7 @@ echo
 echo Do the first import query
 mysqlquery "
 SET @query1 = CONCAT(\"
-CREATE TABLE tempimport AS
+CREATE TABLE dbasetocivicrm.tempimport AS
 SELECT  TRIM(     LEADING '0'
                   FROM    ass.relatienr
         )             AS  'Contactnummer'
@@ -107,9 +107,6 @@ FROM   @query1
 EXECUTE query1
 "
 echo
-echo Create indexes again
-createindexes
-echo
 echo Do the second import query
 mysqlquery "
 DROP TABLE IF EXISTS dbasetocivicrm.testimport1
@@ -133,13 +130,22 @@ FROM   @query2
 EXECUTE query2
 "
 echo
-echo Delete contacts
+echo Delete contacts and create them again
 mysqlquery "
 DELETE
 FROM  civicrm.civicrm_contact
 WHERE id
         BETWEEN $from
         AND     $till
+"
+mysqlquery "
+INSERT INTO civicrm.civicrm_contact(  id
+            ,                         contact_type
+            )
+SELECT  Contactnummer
+,       'Individual'
+FROM  dbasetocivicrm.testimport1
+WHERE Contactnummer BETWEEN $from AND $till
 "
 echo
 echo
