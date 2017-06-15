@@ -38,7 +38,6 @@ echo Delete nonfunctional rows
 mysqlquery "
 DELETE FROM dbasetocivicrm.ASS
 WHERE       relatienr=''
-OR          relatienr=6631
 "
 echo
 echo Do the first import query
