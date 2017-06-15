@@ -134,22 +134,13 @@ mysqlquery "
 EXECUTE query2
 "
 echo
-echo Delete contacts and create them again
+echo Delete contacts
 mysqlquery "
 DELETE
 FROM  civicrm.civicrm_contact
 WHERE id
         BETWEEN $from
         AND     $till
-"
-mysqlquery "
-INSERT INTO civicrm.civicrm_contact(  id
-            ,                         contact_type
-            )
-SELECT  Contactnummer
-,       'Individual'
-FROM  dbasetocivicrm.testimport1
-WHERE Contactnummer != 1
 "
 echo
 echo
