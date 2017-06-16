@@ -47,6 +47,7 @@ CREATE TABLE dbasetocivicrm.tempimport AS
 SELECT  TRIM(     LEADING '0'
                   FROM    ass.relatienr
         )             AS  'Contactnummer'
+,       NULL          AS  'Overgezet'
 ,       ass.tit       AS  'Voorvoegsel Persoon'
 ,       ass.na2       AS  'Voornaam'
 ,       ass.hisn      AS  'Tussenvoegsel'
