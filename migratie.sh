@@ -57,11 +57,11 @@ SELECT  TRIM(     LEADING '0'
 ,       CONCAT(   ass.ad1
         ,         ' '
         ,         ass.huisnr
-        )             AS  'Home-Straat en huisnummer'
-,       ass.ad1       AS  'Home-Straatnaam'
-,       ass.huisnr    AS  'Home-Huisnummer'
-,       ass.pos       AS  'Home-Postcode'
-,       ass.pla       AS  'Home-Plaats'
+        )             AS  'Straat en huisnummer'
+,       ass.ad1       AS  'Straatnaam'
+,       ass.huisnr    AS  'Huisnummer'
+,       ass.pos       AS  'Postcode'
+,       ass.pla       AS  'Plaats'
 ,       (         SELECT  SPLIT_STR(  omschrijv
                           ,           '  '
                           ,           1
@@ -69,7 +69,7 @@ SELECT  TRIM(     LEADING '0'
                   FROM    dbasetocivicrm.AMCODE amcode
                   WHERE   amcode.tabelnr = '002'
                   AND     amcode.waarde  = ass.lan
-        )             AS  'Home-Land'
+        )             AS  'Land'
 ,       ass.cod
 ,       ass.bdat      AS  'Gemaakt'
 ,       IF( ass.mutd = '1970-01-01'
