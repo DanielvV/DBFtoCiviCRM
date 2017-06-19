@@ -400,22 +400,25 @@ function createtables () {
   ,       ( 'DAN'
           , 4
           )
-  ,       ( 'avv'
+  ,       ( 'AVU'
           , 5
           )
   ,       ( 'NEL'
           , 6
           )
-  ,       ( 'aw'
+  ,       ( 'ARI'
           , 7
           )
-  ,       ( 'ah'
+  ,       ( 'SLI'
+          , 7
+          )
+  ,       ( 'AH'
           , 8
           )
-  ,       ( 'bk'
+  ,       ( 'BEK'
           , 9
           )
-  ,       ( 'jk'
+  ,       ( 'JKE'
           , 10
           )
   "
