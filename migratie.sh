@@ -44,25 +44,7 @@ echo Do the first import query
 mysqlquery "
 SET @query1 = CONCAT(\"
 CREATE TABLE dbasetocivicrm.tempimport AS
-SELECT  TRIM(     LEADING '0'
-                  FROM    ass.relatienr
-        )             AS  'Contactnummer'
-,       NULL          AS  'Overgezet'
-,       ass.tit       AS  'Voorvoegsel Persoon'
-,       ass.na2       AS  'Voornaam'
-,       ass.hisn      AS  'Tussenvoegsel'
-,       ass.na1       AS  'Achternaam'
-,       ass.tav
-,       ass.voornaam  AS  'Roepnaam'
-,       ass.inforegel
-,       CONCAT(   ass.ad1
-        ,         ' '
-        ,         ass.huisnr
-        )             AS  'Straat en huisnummer'
-,       ass.ad1       AS  'Straatnaam'
-,       ass.huisnr    AS  'Huisnummer'
-,       ass.pos       AS  'Postcode'
-,       ass.pla       AS  'Plaats'
+SELECT  ass.*
 ,       (         SELECT  SPLIT_STR(  omschrijv
                           ,           '  '
                           ,           1
@@ -70,17 +52,7 @@ SELECT  TRIM(     LEADING '0'
                   FROM    dbasetocivicrm.AMCODE amcode
                   WHERE   amcode.tabelnr = '002'
                   AND     amcode.waarde  = ass.lan
-        )             AS  'Land'
-,       ass.cod
-,       ass.bdat      AS  'Gemaakt'
-,       IF( ass.mutd = '1970-01-01'
-        ,   ass.bdat
-        ,   ass.mutd
-        )             AS  'Wijzigingsdatum'
-,       COALESCE((SELECT  tempopc.new
-                  FROM    dbasetocivicrm.tempopc tempopc
-                  WHERE   tempopc.old = ass.opc
-        ), 1)         AS  'Wijziger'
+        )             AS  'lan2'
 \",
 tnSELECT(6)
 ,
@@ -113,8 +85,42 @@ DROP TABLE IF EXISTS dbasetocivicrm.testimport1
 "
 mysqlquery "
 SET @query2 = CONCAT(\"
-CREATE TABLE testimport1 AS
-SELECT *
+CREATE
+TABLE   testimport1
+AS
+SELECT  TRIM(     LEADING '0'
+                  FROM    importtable.relatienr
+        )                     AS  'Contactnummer'
+,       NULL                  AS  'Overgezet'
+,       importtable.tit       AS  'Voorvoegsel Persoon'
+,       importtable.na2       AS  'Voornaam'
+,       importtable.hisn      AS  'Tussenvoegsel'
+,       importtable.na1       AS  'Achternaam'
+,       importtable.tav
+,       importtable.voornaam  AS  'Roepnaam'
+,       importtable.inforegel
+,       CONCAT(   importtable.ad1
+        ,         ' '
+        ,         importtable.huisnr
+        )                     AS  'Straat en huisnummer'
+,       importtable.ad1       AS  'Straatnaam'
+,       importtable.huisnr    AS  'Huisnummer'
+,       importtable.pos       AS  'Postcode'
+,       importtable.pla       AS  'Plaats'
+,       COALESCE((SELECT  templan.new
+                  FROM    dbasetocivicrm.templan templan
+                  WHERE   templan.old = importtable.lan2
+        ), importtable.lan2)  AS  'Land'
+,       importtable.cod
+,       importtable.bdat      AS  'Gemaakt'
+,       IF( importtable.mutd = '1970-01-01'
+        ,   importtable.bdat
+        ,   importtable.mutd
+        )                     AS  'Wijzigingsdatum'
+,       COALESCE((SELECT  tempopc.new
+                  FROM    dbasetocivicrm.tempopc tempopc
+                  WHERE   tempopc.old = importtable.opc
+        ), 1)                 AS  'Wijziger'
 \",
 SELECTseparate(0, 6, 'tn')
 ,
@@ -371,6 +377,7 @@ function droptables () {
   echo droptables...
   mysqlquery "
   DROP TABLE IF EXISTS dbasetocivicrm.tempopc;
+  DROP TABLE IF EXISTS dbasetocivicrm.templan;
   DROP TABLE IF EXISTS dbasetocivicrm.tempnotitie;
   DROP TABLE IF EXISTS dbasetocivicrm.tempimport;
   "
@@ -380,14 +387,56 @@ function createtables () {
   echo createtables...
   mysqlquery "
   CREATE
-  TABLE   dbasetocivicrm.tempopc (old VARCHAR(3), new INT);
+  TABLE   dbasetocivicrm.tempopc  ( old VARCHAR(3)
+                                  , new INT
+                                  )
+  ;
   INSERT
   INTO    dbasetocivicrm.tempopc
-  VALUES  ( 'DAN'
-          , 1
+  VALUES  ( 'JBU'
+          , 3
           )
-  ,       ( 'JBU'
-          , 1
+  ,       ( 'DAN'
+          , 4
+          )
+  ,       ( 'avv'
+          , 5
+          )
+  ,       ( 'NEL'
+          , 6
+          )
+  ,       ( 'aw'
+          , 7
+          )
+  ,       ( 'ah'
+          , 8
+          )
+  ,       ( 'bk'
+          , 9
+          )
+  ,       ( 'jk'
+          , 10
+          )
+  "
+  mysqlquery "
+  CREATE
+  TABLE   dbasetocivicrm.templan  ( old VARCHAR(32) CHARSET utf8
+                                  , new VARCHAR(32) CHARSET utf8
+                                  )
+  ;
+  INSERT
+  INTO    dbasetocivicrm.templan
+  VALUES  ( 'Korea Zuid'
+          , 'Zuid-Korea'
+          )
+  ,       ( 'Myanmar (Burma)'
+          , 'Burma'
+          )
+  ,       ( 'Ned. Antillen'
+          , 'Nederlandse Antillen'
+          )
+  ,       ( 'Ver. Staten van Amerika'
+          , 'Verenigde Staten'
           )
   "
   mysqlquery "
@@ -440,7 +489,10 @@ function createprocedures () {
   echo createprocedures...
   mysqlquery "
   DELIMITER //
-  CREATE PROCEDURE DROP_INDEX_IF_EXISTS (tblSchema VARCHAR(64),tblName VARCHAR(64),ndxName VARCHAR(64))
+  CREATE PROCEDURE DROP_INDEX_IF_EXISTS ( tblSchema VARCHAR(64) CHARSET utf8
+                                        , tblName   VARCHAR(64) CHARSET utf8
+                                        , ndxName   VARCHAR(64) CHARSET utf8
+                                        )
   BEGIN
       DECLARE IndexColumnCount INT;
       DECLARE SQLStatement VARCHAR(256);
@@ -450,7 +502,15 @@ function createprocedures () {
       AND table_name = tblName
       AND index_name = ndxName;
       IF IndexColumnCount > 0 THEN
-          SET SQLStatement = CONCAT('ALTER TABLE ',tblSchema,'.',tblName,' DROP INDEX ',ndxName,'');
+          SET SQLStatement = CONCAT ( 'ALTER TABLE '
+                                    , tblSchema
+                                    , '.'
+                                    , tblName
+                                    , ' DROP INDEX '
+                                    , ndxName
+                                    , ''
+                                    )
+          ;
           SET @SQLStmt = SQLStatement;
           PREPARE s FROM @SQLStmt;
           EXECUTE s;
@@ -463,13 +523,13 @@ function createprocedures () {
       DECLARE i INT DEFAULT 0;
       DECLARE SQLStatement VARCHAR(8192);
       SET SQLStatement = '
-        INSERT INTO civicrm.civicrm_bank_account (  id
-        ,                                           created_date
-        ,                                           modified_date
-        ,                                           data_raw
-        ,                                           data_parsed
-        ,                                           contact_id
-        )
+        INSERT INTO civicrm.civicrm_bank_account  ( id
+                                                  , created_date
+                                                  , modified_date
+                                                  , data_raw
+                                                  , data_parsed
+                                                  , contact_id
+                                                  )
       ';
       loop1: LOOP
         SET i := i + 1;
@@ -528,10 +588,10 @@ function createprocedures () {
       DECLARE i INT DEFAULT 0;
       DECLARE SQLStatement VARCHAR(8192);
       SET SQLStatement = '
-        INSERT INTO civicrm.civicrm_bank_account_reference (  reference
-        ,                                                     reference_type_id
-        ,                                                     ba_id
-        )
+        INSERT INTO civicrm.civicrm_bank_account_reference  ( reference
+                                                            , reference_type_id
+                                                            , ba_id
+                                                            )
       ';
       loop1: LOOP
         SET i := i + 1;
@@ -584,18 +644,20 @@ function createfunctions () {
   echo createfunctions...
   mysqlquery "
   DELIMITER //
-  CREATE FUNCTION SPLIT_STR(  x     VARCHAR(255)
-                  ,           delim VARCHAR(12)
-                  ,           pos   INT
-                  )
-  RETURNS VARCHAR(255) DETERMINISTIC
+  CREATE FUNCTION SPLIT_STR ( x       VARCHAR(255)
+                            , delim   VARCHAR(12)
+                            , pos     INT
+                            ) RETURNS VARCHAR(255) CHARSET utf8 DETERMINISTIC
   BEGIN 
       RETURN REPLACE(SUBSTRING(SUBSTRING_INDEX(x, delim, pos),
          LENGTH(SUBSTRING_INDEX(x, delim, pos -1)) + 1),
          delim, '');
   END
   //
-  CREATE FUNCTION SELECTseparate(z INT, x INT, y VARCHAR(12)) RETURNS VARCHAR(10000)
+  CREATE FUNCTION SELECTseparate  ( z       INT
+                                  , x       INT
+                                  , y       VARCHAR(12)
+                                  ) RETURNS VARCHAR(10000) CHARSET utf8
   BEGIN
     DECLARE i INT DEFAULT z;
     SET @r = '';
@@ -612,7 +674,8 @@ function createfunctions () {
     RETURN @r;
   END
   //
-  CREATE FUNCTION tnSELECT(x INT) RETURNS VARCHAR(10000)
+  CREATE FUNCTION tnSELECT  ( x       INT
+                            ) RETURNS VARCHAR(10000) CHARSET utf8
   BEGIN
     DECLARE i INT DEFAULT 0;
     SET @r = \"
@@ -638,7 +701,8 @@ function createfunctions () {
     \");
   END
   //
-  CREATE FUNCTION eaSELECT(x INT) RETURNS VARCHAR(10000)
+  CREATE FUNCTION eaSELECT  ( x       INT
+                            ) RETURNS VARCHAR(10000) CHARSET utf8
   BEGIN
     DECLARE i INT DEFAULT 0;
     SET @r = \"
@@ -659,7 +723,8 @@ function createfunctions () {
     \");
   END
   //
-  CREATE FUNCTION ibSELECT(x INT) RETURNS VARCHAR(10000)
+  CREATE FUNCTION ibSELECT  ( x       INT
+                            ) RETURNS VARCHAR(10000) CHARSET utf8
   BEGIN
     DECLARE i INT DEFAULT 0;
     SET @r = '';
@@ -680,7 +745,8 @@ function createfunctions () {
     RETURN @r;
   END
   //
-  CREATE FUNCTION tnJOIN(x INT) RETURNS VARCHAR(10000)
+  CREATE FUNCTION tnJOIN  ( x       INT
+                          ) RETURNS VARCHAR(10000) CHARSET utf8
   BEGIN
     DECLARE i INT DEFAULT 0;
     SET @r = '';
@@ -703,7 +769,8 @@ function createfunctions () {
     RETURN @r;
   END
   //
-  CREATE FUNCTION eaJOIN(x INT) RETURNS VARCHAR(10000)
+  CREATE FUNCTION eaJOIN  ( x       INT
+                          ) RETURNS VARCHAR(10000) CHARSET utf8
   BEGIN
     DECLARE i INT DEFAULT 0;
     SET @r = '';
@@ -724,7 +791,8 @@ function createfunctions () {
     RETURN @r;
   END
   //
-  CREATE FUNCTION ibJOIN(x INT) RETURNS VARCHAR(10000)
+  CREATE FUNCTION ibJOIN  ( x       INT
+                          ) RETURNS VARCHAR(10000) CHARSET utf8
   BEGIN
     DECLARE i INT DEFAULT 0;
     SET @r = '';

@@ -5,13 +5,13 @@ function main {
 function mysqlin () {
   echo mysqlin...
   echo "$1" | \
-  mysql -h $(cat ../DBFToMySQL/config.php \
+  mysql -h $(cat $HOME/GIT/DBFToMySQL/config.php \
              | grep host \
              | tail -n 1 \
              | cut -d "'" -f 2 \
            ) \
         -u civicrm \
-        -p$( cat ../DBFToMySQL/config.php \
+        -p$( cat $HOME/GIT/DBFToMySQL/config.php \
              | grep passwd \
              | cut -d "'" -f 2 \
            ) \
@@ -20,7 +20,7 @@ function mysqlin () {
 }
 function notities () {
   echo notities...
-  dir=../../SoL/
+  dir=$HOME/SoL/
   zip=VNB
   mkdir    $dir$zip
   unzip -q $dir$zip.zip \
@@ -29,7 +29,7 @@ function notities () {
   for i in $dir$zip/*
   do echo -n "\"\"\");
   INSERT INTO notities VALUES
-  (${i:15:4}, \"\"\"" > ${i/.VNB/.0}
+  (${i:${#i}-8:4}, \"\"\"" > ${i/.VNB/.0}
   done
   echo -n "
   DROP TABLE IF EXISTS notities;
@@ -40,7 +40,7 @@ function notities () {
   INSERT INTO notities VALUES
   (0, \"\"\"eerste notitie" > $dir$zip/0first
   echo "\"\"\");" > $dir$zip/Zlast
-  mysqlin "$(cat $dir$zip/* | iconv -f $(cat ../DBFToMySQL/config.php | grep from_encoding | cut -d "'" -f 2) -t UTF-8 | sed "s/\\\\'/'/g; s/'/\\\\'/g; s/ *\"\"\")/')/g; s/\"\"\"/'/g")"
+  mysqlin "$(cat $dir$zip/* | iconv -f $(cat $HOME/GIT/DBFToMySQL/config.php | grep from_encoding | cut -d "'" -f 2) -t UTF-8 | sed "s/\\\\'/'/g; s/'/\\\\'/g; s/ *\"\"\")/')/g; s/\"\"\"/'/g")"
   rm -r $dir$zip
 }
 main
