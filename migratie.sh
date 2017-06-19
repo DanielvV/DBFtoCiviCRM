@@ -10,8 +10,8 @@ user='root'
 pass=''
 database='dbasetocivicrm'
 encoding='CP437'
-from=15
-till=10000
+from=70
+till=100000
 function main () {
   step$1
 }
@@ -135,6 +135,72 @@ FROM   @query2
 ;
 EXECUTE query2
 "
+mysqlquery "
+INSERT
+INTO dbasetocivicrm.testimport1 ( Contactnummer
+                                , status
+                                , contacttype
+                                , Voornaam
+                                , Tussenvoegsel
+                                , Achternaam
+                                )
+VALUES  ( 71
+        , 'N'
+        , 'person'
+        , 'Joop'
+        , ''
+        , 'Buker'
+        )
+,       ( 72
+        , 'N'
+        , 'person'
+        , 'Daniël'
+        , 'van'
+        , 'Vuuren'
+        )
+,       ( 73
+        , 'N'
+        , 'person'
+        , 'Alex'
+        , 'van'
+        , 'Vuuren'
+        )
+,       ( 74
+        , 'N'
+        , 'person'
+        , 'Wim'
+        , ''
+        , 'Nelisse'
+        )
+,       ( 75
+        , 'N'
+        , 'person'
+        , 'Ariëtte'
+        , ''
+        , 'Westland'
+        )
+,       ( 76
+        , 'N'
+        , 'person'
+        , 'Albert'
+        , ''
+        , 'Holtvluwer'
+        )
+,       ( 77
+        , 'N'
+        , 'person'
+        , 'Bert'
+        , ''
+        , 'Keizer'
+        )
+,       ( 78
+        , 'N'
+        , 'person'
+        , 'Joke'
+        , ''
+        , 'Keizer'
+        )
+"
 echo
 echo Delete contacts and create them again
 mysqlquery "
@@ -210,6 +276,7 @@ SELECT  'civicrm_contact'
 ,       Wijziger
 ,       Gemaakt
 FROM    dbasetocivicrm.testimport1
+WHERE   Gemaakt != '1970-01-01'
 UNION ALL
 SELECT  'civicrm_contact'
 ,       Contactnummer
@@ -219,6 +286,7 @@ SELECT  'civicrm_contact'
 ,       Wijziger
 ,       Wijzigingsdatum
 FROM    dbasetocivicrm.testimport1
+WHERE   Wijzigingsdatum != '1970-01-01'
 "
 echo
 echo Create tables
@@ -403,31 +471,31 @@ function createtables () {
   INSERT
   INTO    dbasetocivicrm.tempopc
   VALUES  ( 'JBU'
-          , 3
+          , 71
           )
   ,       ( 'DAN'
-          , 4
+          , 72
           )
   ,       ( 'AVU'
-          , 5
+          , 73
           )
   ,       ( 'NEL'
-          , 6
+          , 74
           )
   ,       ( 'ARI'
-          , 7
+          , 75
           )
   ,       ( 'SLI'
-          , 7
+          , 75
           )
   ,       ( 'AH'
-          , 8
+          , 76
           )
   ,       ( 'BEK'
-          , 9
+          , 77
           )
   ,       ( 'JKE'
-          , 9
+          , 78
           )
   "
   mysqlquery "
