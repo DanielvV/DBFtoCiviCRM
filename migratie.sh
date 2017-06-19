@@ -57,16 +57,12 @@ SELECT  ass.*
 tnSELECT(6)
 ,
 eaSELECT(6)
-,
-ibSELECT(5)
 ,\"
 FROM    dbasetocivicrm.ASS        ass
 \",
 tnJOIN(6)
 ,
 eaJOIN(6)
-,
-ibJOIN(5)
 ,\"
 WHERE   ass.verwijderd  = 0
 AND     ass.relatienr BETWEEN $from AND $till
@@ -126,9 +122,12 @@ SELECT  TRIM(     LEADING '0'
 SELECTseparate(0, 6, 'tn')
 ,
 SELECTseparate(0, 1, 'ea')
+,
+ibSELECT(5)
 ,\"
 FROM dbasetocivicrm.tempimport importtable
-\"
+\",
+ibJOIN(5)
 )
 ;
 PREPARE query2
@@ -803,7 +802,7 @@ function createfunctions () {
     loop1: LOOP
       SET i := i + 1;
       SET @r = CONCAT(@r,\"
-        LEFT JOIN dbasetocivicrm.VMSLREL ib\",i,\" ON ass.relatienr  = ib\",i,\".relatienr
+        LEFT JOIN dbasetocivicrm.VMSLREL ib\",i,\" ON importtable.relatienr  = ib\",i,\".relatienr
                                             AND ib\",i,\".sleutelcd  = 'IB'
                                             AND ib\",i,\".generiek   = 0
                                             AND ib\",i,\".volgnummer = \",i);
