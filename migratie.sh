@@ -12,6 +12,7 @@ database='dbasetocivicrm'
 encoding='CP437'
 from=70
 till=100000
+cividatabase=civicrm0000
 function main () {
   step$1
 }
@@ -205,13 +206,13 @@ echo
 echo Delete contacts and create them again
 mysqlquery "
 DELETE
-FROM  civicrm.civicrm_contact
+FROM  $cividatabase.civicrm_contact
 WHERE id
         BETWEEN $from
         AND     $till
 "
 mysqlquery "
-INSERT INTO civicrm.civicrm_contact(  id
+INSERT INTO $cividatabase.civicrm_contact(  id
             ,                         contact_type
             )
 SELECT  Contactnummer
@@ -236,7 +237,7 @@ echo
 echo Delete some rows from log
 mysqlquery "
 DELETE
-FROM  civicrm.civicrm_log
+FROM  $cividatabase.civicrm_log
 WHERE entity_id
         BETWEEN $from
         AND     $till
@@ -245,7 +246,7 @@ echo
 echo Update created_date and modified_date on all contacts
 mysqlquery "
 INSERT
-INTO    civicrm.civicrm_contact ( id
+INTO    $cividatabase.civicrm_contact ( id
         ,                         created_date
         ,                         modified_date
         )
@@ -262,7 +263,7 @@ echo
 echo Insert modified_date for all contacts in log
 mysqlquery "
 INSERT
-INTO    civicrm.civicrm_log(  entity_table
+INTO    $cividatabase.civicrm_log(  entity_table
         ,                     entity_id
         ,                     data
         ,                     modified_id
@@ -295,13 +296,13 @@ echo
 echo Delete notes from note
 mysqlquery "
 DELETE
-FROM  civicrm.civicrm_note
+FROM  $cividatabase.civicrm_note
 WHERE contact_id
 "
 echo
 echo Create notes in note
 mysqlquery "
-INSERT INTO civicrm.civicrm_note(id, entity_table, entity_id, note, contact_id, modified_date, subject, privacy)
+INSERT INTO $cividatabase.civicrm_note(id, entity_table, entity_id, note, contact_id, modified_date, subject, privacy)
 SELECT  TRIM( LEADING '0'
               FROM    hfnotie.bestnummer
         )                 AS f1
@@ -328,7 +329,7 @@ FROM      dbasetocivicrm.HFNOTIE  hfnotie
 LEFT JOIN dbasetocivicrm.notities notities  ON  TRIM( LEADING '0'
                                                       FROM    hfnotie.bestnummer
                                                 ) = notities.id
-INNER JOIN  civicrm.civicrm_contact contact ON contact.id = TRIM( LEADING '0'
+INNER JOIN  $cividatabase.civicrm_contact contact ON contact.id = TRIM( LEADING '0'
                                                                   FROM    SUBSTR( hfnotie.sleutel
                                                                           ,       4
                                                                           )
@@ -341,7 +342,7 @@ WHERE   SUBSTR( hfnotie.sleutel
 echo
 echo Insert modified_date for all notes in log
 mysqlquery "
-INSERT INTO civicrm.civicrm_log(entity_table, entity_id, data, modified_id, modified_date)
+INSERT INTO $cividatabase.civicrm_log(entity_table, entity_id, data, modified_id, modified_date)
 SELECT  f1
 ,       f2
 ,       f3
@@ -361,13 +362,13 @@ echo
 echo Delete bankaccounts
 mysqlquery "
 DELETE
-FROM  civicrm.civicrm_bank_account
+FROM  $cividatabase.civicrm_bank_account
 "
 echo
 echo Delete bankaccount references
 mysqlquery "
 DELETE
-FROM  civicrm.civicrm_bank_account_reference
+FROM  $cividatabase.civicrm_bank_account_reference
 "
 echo
 echo Create bankaccounts
@@ -544,7 +545,7 @@ function createtables () {
   ,       hfnotie.mutd
   FROM    dbasetocivicrm.HFNOTIE  hfnotie
   INNER
-  JOIN    civicrm.civicrm_contact contact
+  JOIN    $cividatabase.civicrm_contact contact
   ON      TRIM( LEADING '0'
                 FROM    SUBSTR( hfnotie.sleutel
                         ,       4
@@ -603,7 +604,7 @@ function createprocedures () {
       DECLARE i INT DEFAULT 0;
       DECLARE SQLStatement VARCHAR(8192);
       SET SQLStatement = '
-        INSERT INTO civicrm.civicrm_bank_account  ( id
+        INSERT INTO $cividatabase.civicrm_bank_account  ( id
                                                   , created_date
                                                   , modified_date
                                                   , data_raw
@@ -668,7 +669,7 @@ function createprocedures () {
       DECLARE i INT DEFAULT 0;
       DECLARE SQLStatement VARCHAR(8192);
       SET SQLStatement = '
-        INSERT INTO civicrm.civicrm_bank_account_reference  ( reference
+        INSERT INTO $cividatabase.civicrm_bank_account_reference  ( reference
                                                             , reference_type_id
                                                             , ba_id
                                                             )
@@ -681,7 +682,7 @@ function createprocedures () {
           ,         bank_account.id
           FROM      dbasetocivicrm.testimport1    testimport1
           INNER
-          JOIN      civicrm.civicrm_bank_account  bank_account
+          JOIN      $cividatabase.civicrm_bank_account  bank_account
           ON        CONCAT( testimport1.Contactnummer
                     ,       \",i,\"
                     ) = bank_account.id
