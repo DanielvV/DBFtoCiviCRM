@@ -21,7 +21,6 @@ civicrm)
 civicrm1)
   from=70
   till=100000
-  cividatabase=civicrm0000
   ;;
 esac
 function main () {
