@@ -10,7 +10,7 @@ user='root'
 pass=''
 database='dbasetocivicrm'
 encoding='CP437'
-from=10
+from=15
 till=10000
 function main () {
   step$1
@@ -171,6 +171,9 @@ echo Delete some rows from log
 mysqlquery "
 DELETE
 FROM  civicrm.civicrm_log
+WHERE entity_id
+        BETWEEN $from
+        AND     $till
 "
 echo
 echo Update created_date and modified_date on all contacts
@@ -415,7 +418,7 @@ function createtables () {
           , 9
           )
   ,       ( 'JKE'
-          , 10
+          , 9
           )
   "
   mysqlquery "
