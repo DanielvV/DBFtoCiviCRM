@@ -681,8 +681,8 @@ function createtables () {
   "
   mysqlquery "
   CREATE
-  TABLE   dbasetocivicrm.templan  ( old VARCHAR(32) CHARSET utf8
-                                  , new VARCHAR(32) CHARSET utf8
+  TABLE   dbasetocivicrm.templan  ( old VARCHAR(64) CHARSET utf8
+                                  , new VARCHAR(64) CHARSET utf8
                                   )
   ;
   INSERT
