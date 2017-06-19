@@ -164,6 +164,7 @@ INTO dbasetocivicrm.testimport1 ( Adressfrom
                                 , cod
                                 , Gemaakt
                                 , Wijzigingsdatum
+                                , Wijziger
                                 , Emailadressen
                                 , tn1
                                 )
@@ -230,7 +231,7 @@ SELECT  TRIM(     LEADING '0'
 ,       COALESCE((SELECT  tempopc.new
                   FROM    dbasetocivicrm.tempopc tempopc
                   WHERE   tempopc.old = ass.opc
-        ), 1)         AS  'Wijziger'
+        ), 1)
 ,       IF( vmslrel.codebalk = 'MOB'
         ,   TRIM( LEADING ' ' FROM
                   SPLIT_STR(  vmslrel.sleutelwrd
