@@ -10,9 +10,20 @@ user='root'
 pass=''
 database='dbasetocivicrm'
 encoding='CP437'
-from=70
-till=100000
-cividatabase=civicrm0000
+  from=3
+  till=100000000
+  cividatabase=civicrm
+case $HOSTNAME in
+civicrm)
+  from=70
+  till=10000
+  ;;
+civicrm1)
+  from=70
+  till=100000
+  cividatabase=civicrm0000
+  ;;
+esac
 function main () {
   step$1
 }
