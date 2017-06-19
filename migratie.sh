@@ -164,8 +164,8 @@ INTO dbasetocivicrm.testimport1 ( Adressfrom
                                 , cod
                                 , Gemaakt
                                 , Wijzigingsdatum
-                                , Telefoonnummer
-                                , Mailadres
+                                , Emailadressen
+                                , tn1
                                 )
 SELECT  TRIM(     LEADING '0'
                   FROM    ass.relatienr
@@ -227,9 +227,9 @@ SELECT  TRIM(     LEADING '0'
 ,       ass.cod
 ,       ass.bdat
 ,       ass.mutd
-,       COALESCE((SELECT  replace1.new
-                  FROM    replace1
-                  WHERE   replace1.old = ass.opc
+,       COALESCE((SELECT  tempopc.new
+                  FROM    dbasetocivicrm.tempopc tempopc
+                  WHERE   tempopc.old = ass.opc
         ), 1)         AS  'Wijziger'
 ,       IF( vmslrel.codebalk = 'MOB'
         ,   TRIM( LEADING ' ' FROM
