@@ -208,6 +208,15 @@ SELECT  'civicrm_contact'
         ,       Contactnummer
         )
 ,       Wijziger
+,       Gemaakt
+FROM    dbasetocivicrm.testimport1
+UNION ALL
+SELECT  'civicrm_contact'
+,       Contactnummer
+,       CONCAT( 'civicrm_contact,'
+        ,       Contactnummer
+        )
+,       Wijziger
 ,       Wijzigingsdatum
 FROM    dbasetocivicrm.testimport1
 "
