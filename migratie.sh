@@ -171,9 +171,6 @@ echo Delete some rows from log
 mysqlquery "
 DELETE
 FROM  civicrm.civicrm_log
-WHERE entity_id
-        BETWEEN $from
-        AND     $till
 "
 echo
 echo Update created_date and modified_date on all contacts
