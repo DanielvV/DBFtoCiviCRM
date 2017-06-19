@@ -11,7 +11,7 @@ pass=''
 database='dbasetocivicrm'
 encoding='CP437'
 from=10
-till=100000000
+till=10000
 function main () {
   step$1
 }
@@ -91,7 +91,8 @@ AS
 SELECT  TRIM(     LEADING '0'
                   FROM    importtable.relatienr
         )                     AS  'Contactnummer'
-,       NULL                  AS  'Overgezet'
+,       'N'                   AS  'status'
+,       'person'              AS  'contacttype'
 ,       importtable.tit       AS  'Voorvoegsel Persoon'
 ,       importtable.na2       AS  'Voornaam'
 ,       importtable.hisn      AS  'Tussenvoegsel'
