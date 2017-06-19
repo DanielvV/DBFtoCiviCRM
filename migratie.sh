@@ -4,13 +4,13 @@
 # https://www.experts-exchange.com/articles/1250/3-Ways-to-Speed-Up-MySQL.html
 # https://stackoverflow.com/a/1671056 (Can MySQL replace multiple characters?)
 # https://forum.civicrm.org/index.php?topic=7567.0 (Import date created and/or date modified?)
-#SELECT * FROM dbasetocivicrm.testimport1
+#SELECT * FROM dbasetocivicrm.testimport1 WHERE type='person'
 host='localhost'
 user='root'
 pass=''
 database='dbasetocivicrm'
 encoding='CP437'
-  from=3
+  from=28
   till=100000000
   cividatabase=civicrm
 case $HOSTNAME in
@@ -100,8 +100,8 @@ SELECT  TRIM(     LEADING '0'
                   FROM    importtable.relatienr
         )                     AS  'Contactnummer'
 ,       'N'                   AS  'status'
-,       'person'              AS  'contacttype'
-,       importtable.tit       AS  'Voorvoegsel Persoon'
+,       'person'              AS  'type'
+,       importtable.tit       AS  'Voorvoegsel'
 ,       importtable.na2       AS  'Voornaam'
 ,       importtable.hisn      AS  'Tussenvoegsel'
 ,       importtable.na1       AS  'Achternaam'
@@ -147,11 +147,65 @@ FROM   @query2
 ;
 EXECUTE query2
 "
+echo
+echo Update Voorvoegsel
+mysqlquery "
+UPDATE  dbasetocivicrm.testimport1
+SET     Voorvoegsel='Stichting'
+WHERE   Voorvoegsel='Stg.'
+"
+mysqlquery "
+UPDATE  dbasetocivicrm.testimport1
+SET     Voorvoegsel='Redactie'
+WHERE   Voorvoegsel='Red.'
+"
+mysqlquery "
+UPDATE  dbasetocivicrm.testimport1
+SET     Voorvoegsel='Vereniging'
+WHERE   Voorvoegsel='Ver.'
+"
+mysqlquery "
+UPDATE  dbasetocivicrm.testimport1
+SET     Voorvoegsel=''
+WHERE   Voorvoegsel='Diaconie'
+"
+mysqlquery "
+UPDATE  dbasetocivicrm.testimport1
+SET     Voorvoegsel=''
+WHERE   Voorvoegsel='Diakonie'
+"
+mysqlquery "
+UPDATE  dbasetocivicrm.testimport1
+SET     Voorvoegsel='Dhr./Mw.'
+WHERE   Voorvoegsel='Dhr./mw.'
+"
+mysqlquery "
+UPDATE  dbasetocivicrm.testimport1
+SET     Voorvoegsel='Dhr./Mw.'
+WHERE   Voorvoegsel='Dhr./mw'
+"
+echo
+echo Update contact type (person / organization)
+mysqlquery "
+UPDATE  dbasetocivicrm.testimport1
+SET     type='org'
+WHERE INSTR(cod, 'BED')
+OR    INSTR(cod, 'CRE')
+OR    INSTR(cod, 'KER')
+OR    INSTR(cod, 'PRI')
+OR    INSTR(cod, 'REL')
+OR    INSTR(cod, 'TGN')
+OR    Voorvoegsel='Stichting'
+OR    Voorvoegsel='Redactie'
+OR    Voorvoegsel='Vereniging'
+"
+echo
+echo Add contact users for change history
 mysqlquery "
 INSERT
 INTO dbasetocivicrm.testimport1 ( Contactnummer
                                 , status
-                                , contacttype
+                                , type
                                 , Voornaam
                                 , Tussenvoegsel
                                 , Achternaam
