@@ -298,7 +298,7 @@ SET     Voorvoegsel='Dhr./Mw.'
 WHERE   Voorvoegsel='Dhr./mw'
 "
 echo
-echo Update contact type (person / organization)
+echo Update contact type of person or organization
 mysqlquery "
 UPDATE  dbasetocivicrm.testimport1
 SET     type='org'
