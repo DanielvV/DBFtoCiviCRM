@@ -99,6 +99,7 @@ AS
 SELECT  TRIM(     LEADING '0'
                   FROM    importtable.relatienr
         )                     AS  'Contactnummer'
+,       '00000000'            AS  'Adressfrom'
 ,       'N'                   AS  'status'
 ,       'person'              AS  'type'
 ,       importtable.tit       AS  'Voorvoegsel'
@@ -130,10 +131,9 @@ SELECT  TRIM(     LEADING '0'
                   FROM    dbasetocivicrm.tempopc tempopc
                   WHERE   tempopc.old = importtable.opc
         ), 1)                 AS  'Wijziger'
+,       ea                    AS  'Emailadressen'
 \",
 SELECTseparate(0, 6, 'tn')
-,
-SELECTseparate(0, 1, 'ea')
 ,
 ibSELECT(5)
 ,\"
@@ -146,6 +146,119 @@ PREPARE query2
 FROM   @query2
 ;
 EXECUTE query2
+"
+echo
+echo tttht
+mysqlquery "
+INSERT
+INTO dbasetocivicrm.testimport1 ( Adressfrom
+                                , status
+                                , type
+                                , Voorvoegsel
+                                , Voornaam
+                                , Tussenvoegsel
+                                , Achternaam
+                                , tav
+                                , Roepnaam
+                                , inforegel
+                                , cod
+                                , Gemaakt
+                                , Wijzigingsdatum
+                                , Telefoonnummer
+                                , Mailadres
+                                )
+SELECT  TRIM(     LEADING '0'
+                  FROM    ass.relatienr
+        )
+,       'N'
+,       'person'
+,       SPLIT_STR(vmslrel.informatie
+        ,         '/'
+        ,         1
+        )
+,       IF( SUBSTR( SPLIT_STR(  vmslrel.informatie
+                    ,           '/'
+                    ,           2
+                    )
+            ,       2
+            ,       1
+            ) != '.'
+        ,   ''
+        ,   SPLIT_STR(  vmslrel.informatie
+            ,           '/'
+            ,           2
+            )
+        )
+,       IF( SPLIT_STR(  vmslrel.informatie
+            ,           '/'
+            ,           4
+            ) != ''
+        ,   SPLIT_STR(  vmslrel.informatie
+            ,           '/'
+            ,           3
+            )
+        ,   ass.hisn
+        )
+,       IF( SPLIT_STR(  vmslrel.informatie
+            ,           '/'
+            ,           4
+            ) != ''
+        ,   SPLIT_STR(  vmslrel.informatie
+            ,           '/'
+            ,           4
+            )
+        ,   ass.na1
+        )
+,       ass.tav
+,       IF( SUBSTR( SPLIT_STR(  vmslrel.informatie
+                       ,           '/'
+                       ,           2
+                       )
+            ,          2
+            ,          1
+            ) != '.'
+        ,   SPLIT_STR(  vmslrel.informatie
+            ,           '/'
+            ,           2
+            )
+        ,   ''
+        )
+,       ass.inforegel
+,       ass.cod
+,       ass.bdat
+,       ass.mutd
+,       COALESCE((SELECT  replace1.new
+                  FROM    replace1
+                  WHERE   replace1.old = ass.opc
+        ), 1)         AS  'Wijziger'
+,       IF( vmslrel.codebalk = 'MOB'
+        ,   TRIM( LEADING ' ' FROM
+                  SPLIT_STR(  vmslrel.sleutelwrd
+                  ,           '         '
+                  ,           2
+                  )
+            )
+        ,   ''
+        )
+,       IF( vmslrel.sleutelcd = 'EA'
+        ,   vmslrel.sleutelwrd
+        ,   ''
+        )
+FROM        dbasetocivicrm.ASS      ass
+INNER JOIN  dbasetocivicrm.VMSLREL  vmslrel ON ass.relatienr    = vmslrel.relatienr
+                                       AND  (   (   vmslrel.sleutelcd    = 'TN'
+                                                AND vmslrel.codebalk     = 'MOB'
+                                                AND vmslrel.informatie  != '///'
+                                                AND vmslrel.informatie  != ''
+                                                )
+                                            OR  (   vmslrel.sleutelcd    = 'EA'
+                                                AND vmslrel.volgnummer  != 1
+                                                )
+                                            )
+                                       AND vmslrel.generiek     = 0
+WHERE   ass.verwijderd = 0
+AND     ass.relatienr BETWEEN $from AND $till
+
 "
 echo
 echo Update Voorvoegsel
@@ -277,13 +390,15 @@ WHERE id
         AND     $till
 "
 mysqlquery "
-INSERT INTO $cividatabase.civicrm_contact(  id
-            ,                         contact_type
-            )
+INSERT INTO $cividatabase.civicrm_contact ( id
+                                          , contact_type
+                                          )
 SELECT  Contactnummer
 ,       'Individual'
 FROM  dbasetocivicrm.testimport1
-WHERE Contactnummer BETWEEN $from AND $till
+WHERE Contactnummer
+        BETWEEN $from
+        AND     $till
 "
 echo
 echo
