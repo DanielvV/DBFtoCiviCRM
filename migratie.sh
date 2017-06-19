@@ -518,7 +518,10 @@ function createtables () {
   ;
   INSERT
   INTO    dbasetocivicrm.templan
-  VALUES  ( 'Korea Zuid'
+  VALUES  ( 'Onbekend land'
+          , 'Nederland'
+          )
+  ,       ( 'Korea Zuid'
           , 'Zuid-Korea'
           )
   ,       ( 'Myanmar (Burma)'
@@ -529,6 +532,57 @@ function createtables () {
           )
   ,       ( 'Ver. Staten van Amerika'
           , 'Verenigde Staten'
+          )
+  ,       ( 'Groot-Brittannië'
+          , 'Verenigd Koninkrijk'
+          )
+  ,       ( 'Wit-Rusland'
+          , 'Belarus'
+          )
+  ,       ( 'Centraal Afrikaanse Republiek 03FFF'
+          , 'Centraal-Afrikaanse Republiek'
+          )
+  ,       ( 'Democratisch Rep. Congo'
+          , 'Democratisch Republiek Congo (Congo-Kinshasa)'
+          )
+  ,       ( 'Faeröer Eilanden'
+          , 'Faeröer'
+          )
+  ,       ( 'Hong Kong'
+          , 'Hongkong'
+          )
+  ,       ( 'Kenya'
+          , 'Kenia'
+          )
+  ,       ( 'Mauretanië'
+          , 'Mauritanië'
+          )
+  ,       ( 'Burma'
+          , 'Myanmar'
+          )
+  ,       ( 'Nederlandse Antillen'
+          , 'Curaçao'
+          )
+  ,       ( 'Nieuw Zeeland'
+          , 'Nieuw-Zeeland'
+          )
+  ,       ( 'Papua Nieuw Guinea'
+          , 'Papua-Nieuw-Guinea'
+          )
+  ,       ( 'Filippijnen'
+          , 'Filipijnen'
+          )
+  ,       ( 'St. Vincent'
+          , 'Sint Vincent en de Grenadines'
+          )
+  ,       ( 'Slowakije'
+          , 'Slovakije'
+          )
+  ,       ( 'Vaticaan'
+          , 'Vaticaanstad'
+          )
+  ,       ( 'Viet Nam'
+          , 'Vietnam'
           )
   "
   mysqlquery "
