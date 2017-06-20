@@ -504,7 +504,6 @@ echo Delete notes from note
 mysqlquery "
 DELETE
 FROM  $cividatabase.civicrm_note
-WHERE contact_id
 "
 echo
 echo Create notes in note
