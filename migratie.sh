@@ -332,11 +332,12 @@ OR    Voorvoegsel='Vereniging'
 echo
 echo Add contact users for change history
 mysqlquery "
+NAMES utf8;
 INSERT
 INTO dbasetocivicrm.testimport1 ( Contactnummer
                                 , status
                                 , type
-                                , Voornaam      CHARSET utf8
+                                , Voornaam
                                 , Tussenvoegsel
                                 , Achternaam
                                 )
