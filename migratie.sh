@@ -10,17 +10,16 @@ user='root'
 pass=''
 database='dbasetocivicrm'
 encoding='CP437'
-  from=28
-  till=100000000
+  from=70
+  till=100000
   cividatabase=civicrm
 case $HOSTNAME in
 civicrm)
-  from=70
   till=10000
   ;;
-civicrm1)
-  from=70
-  till=100000
+civicrm2)
+  from=28
+  till=100000000
   ;;
 esac
 function main () {
@@ -32,7 +31,13 @@ function mysqlquery () {
   mysql -h $host \
         -u $user \
         $database \
-        -e "$1;" \
+        -e "
+          SET
+          NAMES utf8
+          ;
+          $1
+          ;
+        " \
         2>&1 | grep -v 'Using a password on the command line interface can be insecure.'
 }
 function step () {
@@ -98,6 +103,9 @@ AS
 SELECT  TRIM(     LEADING '0'
                   FROM    importtable.relatienr
         )                     AS  'Contactnummer'
+,       CAST(     'Vigilant'
+                  AS CHAR(32)
+        )                     AS  'Herkomst'
 ,       '00000000'            AS  'Adressfrom'
 ,       'N'                   AS  'status'
 ,       'person'              AS  'type'
@@ -168,6 +176,7 @@ echo Add extra contacts
 mysqlquery "
 INSERT
 INTO dbasetocivicrm.testimport1 ( Adressfrom
+                                , Herkomst
                                 , status
                                 , type
                                 , Voorvoegsel
@@ -187,6 +196,7 @@ INTO dbasetocivicrm.testimport1 ( Adressfrom
 SELECT  TRIM(     LEADING '0'
                   FROM    ass.relatienr
         )
+,       'Vigilant extra'
 ,       'N'
 ,       'person'
 ,       SPLIT_STR(vmslrel.informatie
@@ -332,7 +342,6 @@ OR    Voorvoegsel='Vereniging'
 echo
 echo Add contact users for change history
 mysqlquery "
-SET NAMES utf8;
 INSERT
 INTO dbasetocivicrm.testimport1 ( Contactnummer
                                 , status
@@ -536,6 +545,7 @@ WHERE   SUBSTR( hfnotie.sleutel
         ,       1
         ,       3
         ) = 'ass'
+AND     contact.source = 'Vigilant'
 "
 echo
 echo Insert modified_date for all notes in log
