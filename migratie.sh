@@ -336,7 +336,7 @@ INSERT
 INTO dbasetocivicrm.testimport1 ( Contactnummer
                                 , status
                                 , type
-                                , Voornaam
+                                , Voornaam      CHARSET utf8
                                 , Tussenvoegsel
                                 , Achternaam
                                 )
