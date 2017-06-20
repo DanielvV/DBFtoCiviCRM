@@ -231,6 +231,10 @@ SELECT  TRIM(     LEADING '0'
                   FROM    dbasetocivicrm.tempopc tempopc
                   WHERE   tempopc.old = ass.opc
         ), 1)
+,       IF( vmslrel.sleutelcd = 'EA'
+        ,   vmslrel.sleutelwrd
+        ,   ''
+        )
 ,       IF( vmslrel.codebalk = 'MOB'
         ,   TRIM( LEADING ' ' FROM
                   SPLIT_STR(  vmslrel.sleutelwrd
@@ -238,10 +242,6 @@ SELECT  TRIM(     LEADING '0'
                   ,           2
                   )
             )
-        ,   ''
-        )
-,       IF( vmslrel.sleutelcd = 'EA'
-        ,   vmslrel.sleutelwrd
         ,   ''
         )
 FROM        dbasetocivicrm.ASS      ass
