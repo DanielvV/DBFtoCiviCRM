@@ -147,6 +147,15 @@ FROM   @query2
 EXECUTE query2
 "
 echo
+echo Add primary key testimport1
+mysqlquery "
+ALTER
+TABLE   dbasetocivicrm.testimport1
+ADD
+PRIMARY
+KEY     Contactnummer
+"
+echo
 echo Autoincrement testimport1
 mysqlquery "
 ALTER
