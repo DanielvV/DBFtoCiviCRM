@@ -153,7 +153,7 @@ ALTER
 TABLE   dbasetocivicrm.testimport1
 ADD
 PRIMARY
-KEY     Contactnummer
+KEY   ( Contactnummer )
 "
 echo
 echo Autoincrement testimport1
