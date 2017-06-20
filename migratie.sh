@@ -147,7 +147,15 @@ FROM   @query2
 EXECUTE query2
 "
 echo
-echo tttht
+echo Autoincrement testimport1
+mysqlquery "
+ALTER
+TABLE   dbasetocivicrm.testimport1
+MODIFY
+COLUMN  Contactnummer INT auto_increment
+"
+echo
+echo Add extra contacts
 mysqlquery "
 INSERT
 INTO dbasetocivicrm.testimport1 ( Adressfrom
@@ -443,12 +451,12 @@ echo
 echo Insert modified_date for all contacts in log
 mysqlquery "
 INSERT
-INTO    $cividatabase.civicrm_log(  entity_table
-        ,                     entity_id
-        ,                     data
-        ,                     modified_id
-        ,                     modified_date
-        )
+INTO    $cividatabase.civicrm_log ( entity_table
+                                  , entity_id
+                                  , data
+                                  , modified_id
+                                  , modified_date
+                                  )
 SELECT  'civicrm_contact'
 ,       Contactnummer
 ,       CONCAT( 'civicrm_contact,'
