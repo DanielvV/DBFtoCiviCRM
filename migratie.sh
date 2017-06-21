@@ -408,6 +408,17 @@ VALUES  ( 71
         )
 "
 echo
+echo Add external id
+mysqlquery "
+ALTER
+TABLE   dbasetocivicrm.testimport1
+ADD     Externe_ID INT(12)
+"
+mysqlquery "
+UPDATE  dbasetocivicrm.testimport1
+SET     Externe_ID = Contactnummer
+"
+echo
 echo Delete contacts and create them again
 mysqlquery "
 DELETE
