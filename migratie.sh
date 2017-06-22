@@ -903,7 +903,6 @@ function createtables () {
               AND     $till
   AND     vmslrel.generiek      = 0
   AND     (   vmslrel.sleutelcd = 'TN'
-          OR  vmslrel.sleutelcd = 'MOB'
           OR  vmslrel.sleutelcd = 'EA'
           )
   "
@@ -1211,14 +1210,13 @@ function createfunctions () {
       SET @r = CONCAT(@r,\"
         LEFT
         JOIN  dbasetocivicrm.eatn ea\",i,\"
-        ON    importtable.relatienr         = ea\",i,\".relatienr
-        AND   ea\",i,\".sleutelcd           = 'EA'
-        AND   ea\",i,\".volgnummer          = \",i
-        AND   (   (   ea\",i,\".informatie  = '///'
-                  OR  ea\",i,\".informatie  = ''
-                  )
-              OR  ea\",i,\".informatie      = importtable.informatie
-              OR  ea\",i,\".voornaam        = importtable.voornaam
+        ON    importtable.relatienr     = ea\",i,\".relatienr
+        AND   ea\",i,\".sleutelcd       = 'EA'
+        AND   ea\",i,\".volgnummer      = \",i
+        AND   (   ea\",i,\".informatie  = '///'
+              OR  ea\",i,\".informatie  = ''
+              OR  ea\",i,\".informatie  = importtable.informatie
+              OR  ea\",i,\".voornaam    = importtable.voornaam
               )
       );
       IF i <= x THEN
