@@ -210,7 +210,7 @@ SELECT  TRIM( LEADING '0'
 ,       vmslrel.voornaam
 ,       IF  ( vmslrel.achternaam != ''
             , vmslrel.tussenvoegsel
-            , ass.hisn
+            , importtable.hisn
             )
 ,       IF  ( vmslrel.achternaam != ''
             , vmslrel.achternaam
