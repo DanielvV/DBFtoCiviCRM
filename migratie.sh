@@ -282,7 +282,7 @@ AND     (   NOT vmslrel.informatie  = CONCAT( ass.tit
                                             , ass.na1
                                             )
         )
-AND     (   NOT SUBSTR  ( ea\",i,\".informatie
+AND     (   NOT SUBSTR  ( vmslrel.informatie
                         , '/'
                         , 2
                         )           = ass.voornaam
