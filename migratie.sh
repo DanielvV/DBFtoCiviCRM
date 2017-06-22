@@ -1135,13 +1135,13 @@ function createfunctions () {
         AND   (   (   ea\",i,\".informatie  = '///'
                   OR  ea\",i,\".informatie  = ''
                   )
-              OR  ea\",i,\".informatie      = CONCAT( importtable.tit
+              OR  ea\",i,\".informatie      = CONCAT( ass.tit
                                                     , '/'
-                                                    , importtable.na2
+                                                    , ass.na2
                                                     , '/'
-                                                    , importtable.hisn
+                                                    , ass.hisn
                                                     , '/'
-                                                    , importtable.na1
+                                                    , ass.na1
                                                     )
               )
         AND   ea\",i,\".generiek            = 0
