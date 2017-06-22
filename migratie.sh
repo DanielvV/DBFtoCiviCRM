@@ -175,116 +175,108 @@ echo
 echo Add extra contacts
 mysqlquery "
 INSERT
-INTO dbasetocivicrm.testimport1 ( Adressfrom
-                                , Herkomst
-                                , status
-                                , type
-                                , Voorvoegsel
-                                , Voornaam
-                                , Tussenvoegsel
-                                , Achternaam
-                                , tav
-                                , Roepnaam
-                                , inforegel
-                                , cod
-                                , Gemaakt
-                                , Wijzigingsdatum
-                                , Wijziger
-                                , Emailadressen
-                                , tn1
-                                )
-SELECT  TRIM(     LEADING '0'
-                  FROM    ass.relatienr
-        )
+INTO    dbasetocivicrm.testimport1  ( Adressfrom
+                                    , Herkomst
+                                    , status
+                                    , type
+                                    , Voorvoegsel
+                                    , Voornaam
+                                    , Tussenvoegsel
+                                    , Achternaam
+                                    , tav
+                                    , inforegel
+                                    , cod
+                                    , Gemaakt
+                                    , Wijzigingsdatum
+                                    , Wijziger
+                                    , Emailadressen
+                                    , tn1
+                                    )
+SELECT  TRIM  ( LEADING '0'
+                FROM    ass.relatienr
+              )
 ,       'Vigilant extra'
 ,       'N'
 ,       'person'
-,       SPLIT_STR(vmslrel.informatie
-        ,         '/'
-        ,         1
-        )
-,       IF( SUBSTR( SPLIT_STR(  vmslrel.informatie
-                    ,           '/'
-                    ,           2
-                    )
-            ,       2
-            ,       1
-            ) != '.'
-        ,   ''
-        ,   SPLIT_STR(  vmslrel.informatie
-            ,           '/'
-            ,           2
+,       SPLIT_STR ( vmslrel.informatie
+                  , '/'
+                  , 1
+                  )
+,       SPLIT_STR ( vmslrel.informatie
+                  , '/'
+                  , 2
+                  )
+,       IF  ( SPLIT_STR ( vmslrel.informatie
+                        , '/'
+                        , 4
+                        ) != ''
+            , SPLIT_STR ( vmslrel.informatie
+                        , '/'
+                        , 3
+                        )
+            , ass.hisn
             )
-        )
-,       IF( SPLIT_STR(  vmslrel.informatie
-            ,           '/'
-            ,           4
-            ) != ''
-        ,   SPLIT_STR(  vmslrel.informatie
-            ,           '/'
-            ,           3
+,       IF  ( SPLIT_STR ( vmslrel.informatie
+                        , '/'
+                        , 4
+                        ) != ''
+            , SPLIT_STR ( vmslrel.informatie
+                        , '/'
+                        , 4
+                        )
+            , IF  ( SPLIT_STR ( vmslrel.informatie
+                              , '/'
+                              , 1
+                              ) = 'Mw.'
+                  , ass.na1
+                  , SPLIT_STR ( ass.na1
+                              , '-'
+                              , 1
+                              )
+                  )
             )
-        ,   ass.hisn
-        )
-,       IF( SPLIT_STR(  vmslrel.informatie
-            ,           '/'
-            ,           4
-            ) != ''
-        ,   SPLIT_STR(  vmslrel.informatie
-            ,           '/'
-            ,           4
-            )
-        ,   ass.na1
-        )
 ,       ass.tav
-,       IF( SUBSTR( SPLIT_STR(  vmslrel.informatie
-                       ,           '/'
-                       ,           2
-                       )
-            ,          2
-            ,          1
-            ) != '.'
-        ,   SPLIT_STR(  vmslrel.informatie
-            ,           '/'
-            ,           2
-            )
-        ,   ''
-        )
 ,       ass.inforegel
 ,       ass.cod
 ,       ass.bdat
 ,       ass.mutd
-,       COALESCE((SELECT  tempopc.new
-                  FROM    dbasetocivicrm.tempopc tempopc
-                  WHERE   tempopc.old = ass.opc
-        ), 1)
-,       IF( vmslrel.sleutelcd = 'EA'
-        ,   vmslrel.sleutelwrd
-        ,   ''
-        )
-,       IF( vmslrel.codebalk = 'MOB'
-        ,   TRIM( LEADING ' ' FROM
-                  SPLIT_STR(  vmslrel.sleutelwrd
-                  ,           '         '
-                  ,           2
+,       COALESCE  ( ( SELECT  tempopc.new
+                      FROM    dbasetocivicrm.tempopc tempopc
+                      WHERE   tempopc.old = ass.opc
+                    )
+                  , 1
                   )
+,       IF  ( vmslrel.sleutelcd = 'EA'
+            , vmslrel.sleutelwrd
+            , ''
             )
-        ,   ''
+,       IF  ( vmslrel.codebalk = 'MOB'
+            , TRIM  ( LEADING ' ' FROM
+                      SPLIT_STR ( vmslrel.sleutelwrd
+                                , '         '
+                                , 2
+                                )
+                    )
+            , ''
+            )
+FROM    dbasetocivicrm.ASS      ass
+INNER
+JOIN    dbasetocivicrm.VMSLREL  vmslrel
+ON      ass.relatienr    = vmslrel.relatienr
+AND     (   (   vmslrel.sleutelcd    = 'TN'
+            AND vmslrel.codebalk     = 'MOB'
+            AND vmslrel.informatie  != '///'
+            AND vmslrel.informatie  != ''
+            )
+        OR  (   vmslrel.sleutelcd    = 'EA'
+            AND vmslrel.volgnummer  != 1
+            )
         )
-FROM        dbasetocivicrm.ASS      ass
-INNER JOIN  dbasetocivicrm.VMSLREL  vmslrel ON ass.relatienr    = vmslrel.relatienr
-                                       AND  (   (   vmslrel.sleutelcd    = 'TN'
-                                                AND vmslrel.codebalk     = 'MOB'
-                                                AND vmslrel.informatie  != '///'
-                                                AND vmslrel.informatie  != ''
-                                                )
-                                            OR  (   vmslrel.sleutelcd    = 'EA'
-                                                AND vmslrel.volgnummer  != 1
-                                                )
-                                            )
-                                       AND vmslrel.generiek     = 0
+AND     vmslrel.generiek     = 0
 WHERE   ass.verwijderd = 0
-AND     ass.relatienr BETWEEN $from AND $till
+AND     ass.relatienr
+          BETWEEN $from
+          AND     $till
 
 "
 echo
