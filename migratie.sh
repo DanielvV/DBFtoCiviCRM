@@ -38,7 +38,9 @@ function mysqlquery () {
           $1
           ;
         " \
-        2>&1 | grep -v 'Using a password on the command line interface can be insecure.'
+        2>&1 \
+        | grep -v 'Using a password on the command line interface can be insecure.' \
+        | grep -v 'ERROR 1146 (42S02) at line 6: Table \'dbasetocivicrm.te'
 }
 function step () {
   echo Please specify step number
@@ -694,21 +696,21 @@ function createindexes () {
   ADD
   INDEX tempimport_FIELD1 ( relatienr
                           )
-  " 2>/dev/null
+  "
   mysqlquery "
   ALTER
   TABLE dbasetocivicrm.tempimport
   ADD
   INDEX tempimport_FIELD2 ( informatie
                           )
-  " 2>/dev/null
+  "
   mysqlquery "
   ALTER
   TABLE dbasetocivicrm.tempimport
   ADD
   INDEX tempimport_FIELD3 ( voornaam
                           )
-  " 2>/dev/null
+  "
   mysqlquery "
   ALTER
   TABLE dbasetocivicrm.testimport1
