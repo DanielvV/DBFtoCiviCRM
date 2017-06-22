@@ -40,7 +40,7 @@ function mysqlquery () {
         " \
         2>&1 \
         | grep -v 'Using a password on the command line interface can be insecure.' \
-        | grep -v 'ERROR 1146 (42S02) at line 6: Table \'dbasetocivicrm.te'
+        | grep -v 'ERROR 1146 (42S02) at line 6: Table'
 }
 function step () {
   echo Please specify step number
