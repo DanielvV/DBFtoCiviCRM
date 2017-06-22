@@ -61,6 +61,14 @@ mysqlquery "
 SET @query1 = CONCAT(\"
 CREATE TABLE dbasetocivicrm.tempimport AS
 SELECT  ass.*
+,       CONCAT( ass.tit
+              , '/'
+              , ass.na2
+              , '/'
+              , ass.hisn
+              , '/'
+              , ass.na1
+              )       AS  'tit/na2/hisn/na1'
 ,       ( SELECT  SPLIT_STR ( omschrijv
                             , '  '
                             , 1
@@ -71,14 +79,10 @@ SELECT  ass.*
         )             AS  'lan2'
 \",
 tnSELECT(6)
-,
-eaSELECT(6)
 ,\"
 FROM    dbasetocivicrm.ASS        ass
 \",
 tnJOIN(6)
-,
-eaJOIN(6)
 ,\"
 WHERE   ass.verwijderd  = 0
 AND     ass.relatienr BETWEEN $from AND $till
@@ -140,12 +144,16 @@ SELECT  TRIM(     LEADING '0'
         ), 1)                 AS  'Wijziger'
 ,       ea                    AS  'Emailadressen'
 \",
+eaSELECT(6)
+,
 SELECTseparate(0, 6, 'tn')
 ,
 ibSELECT(5)
 ,\"
 FROM dbasetocivicrm.tempimport importtable
 \",
+eaJOIN(6)
+,
 ibJOIN(5)
 )
 ;
@@ -1136,24 +1144,17 @@ function createfunctions () {
       SET @r = CONCAT(@r,\"
         LEFT
         JOIN  dbasetocivicrm.VMSLREL ea\",i,\"
-        ON    ass.relatienr                 = ea\",i,\".relatienr
+        ON    importtable.relatienr         = ea\",i,\".relatienr
         AND   ea\",i,\".sleutelcd           = 'EA'
         AND   (   (   ea\",i,\".informatie  = '///'
                   OR  ea\",i,\".informatie  = ''
                   )
-              OR  ea\",i,\".informatie      = CONCAT( ass.tit
-                                                    , '/'
-                                                    , ass.na2
-                                                    , '/'
-                                                    , ass.hisn
-                                                    , '/'
-                                                    , ass.na1
-                                                    )
+              OR  ea\",i,\".informatie      = importtable.tit/na2/hisn/na1
               )
               OR  SPLIT_STR ( ea\",i,\".informatie
                             , '/'
                             , 2
-                            )               = ass.voornaam
+                            )               = importtable.voornaam
         AND   ea\",i,\".generiek            = 0
         AND   ea\",i,\".volgnummer          = \",i
       );
