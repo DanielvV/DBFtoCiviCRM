@@ -430,7 +430,6 @@ WHERE Contactnummer
         AND     $till
 "
 echo
-echo
 echo Drop indexes, tables, procedures and functions
 dropindexes
 droptables
