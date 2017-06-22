@@ -633,16 +633,22 @@ function dropindexes () {
   ,                     'tempimport'
   ,                     'tempimport_FIELD1'
   )
+  "
+  mysqlquery "
   CALL
   DROP_INDEX_IF_EXISTS( 'dbasetocivicrm'
   ,                     'tempimport'
   ,                     'tempimport_FIELD2'
   )
+  "
+  mysqlquery "
   CALL
   DROP_INDEX_IF_EXISTS( 'dbasetocivicrm'
   ,                     'tempimport'
   ,                     'tempimport_FIELD3'
   )
+  "
+  mysqlquery "
   CALL
   DROP_INDEX_IF_EXISTS( 'dbasetocivicrm'
   ,                     'testimport1'
