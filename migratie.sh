@@ -1184,14 +1184,17 @@ function createfunctions () {
     loop1: LOOP
       SET i := i + 1;
       SET @r = CONCAT(@r,\"
-        LEFT JOIN dbasetocivicrm.VMSLREL tn\",i,\" ON ass.relatienr  = tn\",i,\".relatienr
-                                            AND tn\",i,\".sleutelcd  = 'TN'
-                                            AND tn\",i,\".codebalk  != 'FAX'
-                                            AND (   tn\",i,\".informatie  = '///'
-                                                OR  tn\",i,\".informatie  = ''
-                                                OR  tn\",i,\".codebalk    = 'TEL'
-                                          ) AND tn\",i,\".generiek   = 0
-                                            AND tn\",i,\".volgnummer = \",i);
+        LEFT
+        JOIN  dbasetocivicrm.eatn tn\",i,\"
+        ON    ass.relatienr             = tn\",i,\".relatienr
+        AND   tn\",i,\".volgnummer      = \",i\"
+        AND   tn\",i,\".sleutelcd       = 'TN'
+        AND   tn\",i,\".codebalk       != 'FAX'
+        AND   (   tn\",i,\".informatie  = '///'
+              OR  tn\",i,\".informatie  = ''
+              OR  tn\",i,\".codebalk    = 'TEL'
+              )
+      \");
       IF i <= x THEN
         ITERATE loop1;
       END IF;
@@ -1218,8 +1221,7 @@ function createfunctions () {
               OR  ea\",i,\".informatie  = importtable.informatie
               OR  ea\",i,\".voornaam    = importtable.voornaam
               )
-        \"
-      );
+      \");
       IF i <= x THEN
         ITERATE loop1;
       END IF;
