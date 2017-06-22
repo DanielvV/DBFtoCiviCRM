@@ -142,7 +142,6 @@ SELECT  TRIM(     LEADING '0'
                   FROM    dbasetocivicrm.tempopc tempopc
                   WHERE   tempopc.old = importtable.opc
         ), 1)                 AS  'Wijziger'
-,       ea                    AS  'Emailadressen'
 \",
 eaSELECT(6)
 ,
@@ -1084,7 +1083,7 @@ function createfunctions () {
       LEAVE loop1;
     END LOOP loop1;
     RETURN CONCAT(@r,\"
-      , ',' ) AS ea
+      , ',' ) AS 'Emailadressen'
     \");
   END
   //
