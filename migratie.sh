@@ -68,7 +68,7 @@ SELECT  ass.*
               , ass.hisn
               , '/'
               , ass.na1
-              )       AS  'tit/na2/hisn/na1'
+              )       AS  'informatie'
 ,       ( SELECT  SPLIT_STR ( omschrijv
                             , '  '
                             , 1
@@ -1135,7 +1135,7 @@ function createfunctions () {
         AND   (   (   ea\",i,\".informatie  = '///'
                   OR  ea\",i,\".informatie  = ''
                   )
-              OR  ea\",i,\".informatie      = importtable.tit/na2/hisn/na1
+              OR  ea\",i,\".informatie      = importtable.informatie
               )
               OR  SPLIT_STR ( ea\",i,\".informatie
                             , '/'
