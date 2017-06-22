@@ -654,13 +654,13 @@ function createindexes () {
   ALTER
   TABLE dbasetocivicrm.ASS
   ADD
-  INDEX ASS_FIELD_CONCAT  ( CONCAT( ass.tit
+  INDEX ASS_FIELD_CONCAT  ( CONCAT( tit
                                   , '/'
-                                  , ass.na2
+                                  , na2
                                   , '/'
-                                  , ass.hisn
+                                  , hisn
                                   , '/'
-                                  , ass.na1
+                                  , na1
                                   )
                           )
   "
