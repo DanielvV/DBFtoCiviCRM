@@ -262,17 +262,25 @@ SELECT  TRIM( LEADING '0'
 FROM    dbasetocivicrm.ASS      ass
 INNER
 JOIN    dbasetocivicrm.VMSLREL  vmslrel
-ON      ass.relatienr    = vmslrel.relatienr
-AND     (   (   vmslrel.sleutelcd    = 'TN'
-            AND vmslrel.codebalk     = 'MOB'
-            AND vmslrel.informatie  != '///'
-            AND vmslrel.informatie  != ''
+ON      ass.relatienr               = vmslrel.relatienr
+AND     (   (   vmslrel.sleutelcd   = 'TN'
+            AND vmslrel.codebalk    = 'MOB'
+            AND vmslrel.informatie != '///'
+            AND vmslrel.informatie != ''
             )
-        OR  (   vmslrel.sleutelcd    = 'EA'
-            AND vmslrel.volgnummer  != 1
+        OR  (   vmslrel.sleutelcd   = 'EA'
+            AND vmslrel.volgnummer != 1
             )
         )
-AND     vmslrel.generiek     = 0
+AND     vmslrel.generiek            = 0
+AND NOT vmslrel.informatie          = CONCAT( ass.tit
+                                            , '/'
+                                            , ass.na2
+                                            , '/'
+                                            , ass.hisn
+                                            , '/'
+                                            , ass.na1
+                                            )
 WHERE   ass.verwijderd = 0
 AND     ass.relatienr
           BETWEEN $from
@@ -1120,12 +1128,25 @@ function createfunctions () {
     loop1: LOOP
       SET i := i + 1;
       SET @r = CONCAT(@r,\"
-        LEFT JOIN dbasetocivicrm.VMSLREL ea\",i,\" ON ass.relatienr  = ea\",i,\".relatienr
-                                            AND ea\",i,\".sleutelcd  = 'EA'
-                                            AND (   ea\",i,\".informatie  = '///'
-                                                OR  ea\",i,\".informatie  = ''
-                                          ) AND ea\",i,\".generiek   = 0
-                                            AND ea\",i,\".volgnummer = \",i);
+        LEFT
+        JOIN  dbasetocivicrm.VMSLREL ea\",i,\"
+        ON    ass.relatienr                 = ea\",i,\".relatienr
+        AND   ea\",i,\".sleutelcd           = 'EA'
+        AND   (   (   ea\",i,\".informatie  = '///'
+                  OR  ea\",i,\".informatie  = ''
+                  )
+              OR  ea\",i,\".informatie      = CONCAT( importtable.tit
+                                                    , '/'
+                                                    , importtable.na2
+                                                    , '/'
+                                                    , importtable.hisn
+                                                    , '/'
+                                                    , importtable.na1
+                                                    )
+              )
+        AND   ea\",i,\".generiek            = 0
+        AND   ea\",i,\".volgnummer          = \",i
+      );
       IF i <= x THEN
         ITERATE loop1;
       END IF;
