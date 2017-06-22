@@ -1187,7 +1187,7 @@ function createfunctions () {
         LEFT
         JOIN  dbasetocivicrm.eatn tn\",i,\"
         ON    ass.relatienr             = tn\",i,\".relatienr
-        AND   tn\",i,\".volgnummer      = \",i\"
+        AND   tn\",i,\".volgnummer      = \",i,\"
         AND   tn\",i,\".sleutelcd       = 'TN'
         AND   tn\",i,\".codebalk       != 'FAX'
         AND   (   tn\",i,\".informatie  = '///'
