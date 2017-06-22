@@ -652,20 +652,6 @@ function createindexes () {
   "
   mysqlquery "
   ALTER
-  TABLE dbasetocivicrm.ASS
-  ADD
-  INDEX ASS_FIELD_CONCAT  ( CONCAT( tit
-                                  , '/'
-                                  , na2
-                                  , '/'
-                                  , hisn
-                                  , '/'
-                                  , na1
-                                  )
-                          )
-  "
-  mysqlquery "
-  ALTER
   TABLE dbasetocivicrm.VMSLREL
   ADD
   INDEX VMSLREL_FIELD1  ( relatienr
