@@ -215,8 +215,8 @@ SELECT  TRIM( LEADING '0'
 ,       IF  ( vmslrel.achternaam != ''
             , vmslrel.achternaam
             , IF  ( vmslrel.titel = 'Mw.'
-                  , ass.na1
-                  , SPLIT_STR ( ass.na1
+                  , importtable.na1
+                  , SPLIT_STR ( importtable.na1
                               , '-'
                               , 1
                               )
