@@ -99,6 +99,7 @@ echo Do the second import query
 mysqlquery "
 DROP TABLE IF EXISTS dbasetocivicrm.testimport1
 "
+createindexes
 mysqlquery "
 SET @query2 = CONCAT(\"
 CREATE
@@ -629,6 +630,21 @@ function dropindexes () {
   mysqlquery "
   CALL
   DROP_INDEX_IF_EXISTS( 'dbasetocivicrm'
+  ,                     'tempimport'
+  ,                     'tempimport_FIELD1'
+  )
+  CALL
+  DROP_INDEX_IF_EXISTS( 'dbasetocivicrm'
+  ,                     'tempimport'
+  ,                     'tempimport_FIELD2'
+  )
+  CALL
+  DROP_INDEX_IF_EXISTS( 'dbasetocivicrm'
+  ,                     'tempimport'
+  ,                     'tempimport_FIELD3'
+  )
+  CALL
+  DROP_INDEX_IF_EXISTS( 'dbasetocivicrm'
   ,                     'testimport1'
   ,                     'testimport1_FIELD1'
   )
@@ -659,6 +675,27 @@ function createindexes () {
                             , sleutelcd
                             , volgnummer
                             )
+  "
+  mysqlquery "
+  ALTER
+  TABLE dbasetocivicrm.tempimport
+  ADD
+  INDEX tempimport_FIELD1 ( relatienr
+                          )
+  "
+  mysqlquery "
+  ALTER
+  TABLE dbasetocivicrm.tempimport
+  ADD
+  INDEX tempimport_FIELD2 ( informatie
+                          )
+  "
+  mysqlquery "
+  ALTER
+  TABLE dbasetocivicrm.tempimport
+  ADD
+  INDEX tempimport_FIELD3 ( voornaam
+                          )
   "
   mysqlquery "
   ALTER
