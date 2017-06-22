@@ -273,7 +273,7 @@ AND     (   (   vmslrel.sleutelcd   = 'TN'
             )
         )
 AND     vmslrel.generiek            = 0
-AND NOT vmslrel.informatie          = CONCAT( ass.tit
+AND     (   NOT vmslrel.informatie  = CONCAT( ass.tit
                                             , '/'
                                             , ass.na2
                                             , '/'
@@ -281,6 +281,12 @@ AND NOT vmslrel.informatie          = CONCAT( ass.tit
                                             , '/'
                                             , ass.na1
                                             )
+        )
+AND     (   NOT SUBSTR  ( ea\",i,\".informatie
+                        , '/'
+                        , 2
+                        )           = ass.voornaam
+        )
 WHERE   ass.verwijderd = 0
 AND     ass.relatienr
           BETWEEN $from
@@ -1144,6 +1150,10 @@ function createfunctions () {
                                                     , ass.na1
                                                     )
               )
+              OR SUBSTR ( ea\",i,\".informatie
+                        , '/'
+                        , 2
+                        )                   = ass.voornaam
         AND   ea\",i,\".generiek            = 0
         AND   ea\",i,\".volgnummer          = \",i
       );
