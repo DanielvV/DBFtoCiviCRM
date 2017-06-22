@@ -282,10 +282,10 @@ AND     (   NOT vmslrel.informatie  = CONCAT( ass.tit
                                             , ass.na1
                                             )
         )
-AND     (   NOT SUBSTR( vmslrel.informatie
-                      , '/'
-                      , 2
-                      )           = ass.voornaam
+AND     (   NOT SPLIT_STR ( vmslrel.informatie
+                          , '/'
+                          , 2
+                          )         = ass.voornaam
         )
 WHERE   ass.verwijderd = 0
 AND     ass.relatienr
@@ -1150,10 +1150,10 @@ function createfunctions () {
                                                     , ass.na1
                                                     )
               )
-              OR SUBSTR(  ea\",i,\".informatie
-                       ,  '/'
-                       ,  2
-                       )                    = ass.voornaam
+              OR  SPLIT_STR ( ea\",i,\".informatie
+                            , '/'
+                            , 2
+                            )               = ass.voornaam
         AND   ea\",i,\".generiek            = 0
         AND   ea\",i,\".volgnummer          = \",i
       );
