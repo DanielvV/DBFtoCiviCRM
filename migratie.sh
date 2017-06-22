@@ -206,36 +206,15 @@ SELECT  TRIM( LEADING '0'
 ,       'Vigilant extra'
 ,       'N'
 ,       'person'
-,       SPLIT_STR ( vmslrel.informatie
-                  , '/'
-                  , 1
-                  )
-,       SPLIT_STR ( vmslrel.informatie
-                  , '/'
-                  , 2
-                  )
-,       IF  ( SPLIT_STR ( vmslrel.informatie
-                        , '/'
-                        , 4
-                        ) != ''
-            , SPLIT_STR ( vmslrel.informatie
-                        , '/'
-                        , 3
-                        )
+,       vmslrel.titel
+,       vmslrel.voornaam
+,       IF  ( vmslrel.achternaam != ''
+            , vmslrel.tussenvoegsel
             , ass.hisn
             )
-,       IF  ( SPLIT_STR ( vmslrel.informatie
-                        , '/'
-                        , 4
-                        ) != ''
-            , SPLIT_STR ( vmslrel.informatie
-                        , '/'
-                        , 4
-                        )
-            , IF  ( SPLIT_STR ( vmslrel.informatie
-                              , '/'
-                              , 1
-                              ) = 'Mw.'
+,       IF  ( vmslrel.achternaam != ''
+            , vmslrel.achternaam
+            , IF  ( vmslrel.titel = 'Mw.'
                   , ass.na1
                   , SPLIT_STR ( ass.na1
                               , '-'
@@ -269,7 +248,7 @@ SELECT  TRIM( LEADING '0'
             )
 FROM    dbasetocivicrm.tempimport importtable
 INNER
-JOIN    dbasetocivicrm.VMSLREL      vmslrel
+JOIN    dbasetocivicrm.eatn       vmslrel
 ON      importtable.relatienr       = vmslrel.relatienr
 AND     (   (   vmslrel.sleutelcd   = 'TN'
             AND vmslrel.codebalk    = 'MOB'
@@ -282,10 +261,7 @@ AND     (   (   vmslrel.sleutelcd   = 'TN'
         )
 AND     vmslrel.generiek            = 0
 AND     vmslrel.informatie         != importtable.informatie
-AND     SPLIT_STR ( vmslrel.informatie
-                  , '/'
-                  , 2
-                  )                != importtable.voornaam
+AND     vmslrel.voornaam           != importtable.voornaam
 "
 echo
 echo Update Voorvoegsel
@@ -630,6 +606,20 @@ function dropindexes () {
   mysqlquery "
   CALL
   DROP_INDEX_IF_EXISTS( 'dbasetocivicrm'
+  ,                     'eatn'
+  ,                     'eatn_FIELD1'
+  )
+  "
+  mysqlquery "
+  CALL
+  DROP_INDEX_IF_EXISTS( 'dbasetocivicrm'
+  ,                     'eatn'
+  ,                     'eatn_FIELD1_2_6'
+  )
+  "
+  mysqlquery "
+  CALL
+  DROP_INDEX_IF_EXISTS( 'dbasetocivicrm'
   ,                     'tempimport'
   ,                     'tempimport_FIELD1'
   )
@@ -684,6 +674,22 @@ function createindexes () {
   "
   mysqlquery "
   ALTER
+  TABLE dbasetocivicrm.eatn
+  ADD
+  INDEX eatn_FIELD1 ( relatienr
+                    )
+  "
+  mysqlquery "
+  ALTER
+  TABLE dbasetocivicrm.eatn
+  ADD
+  INDEX eatn_FIELD1_2_6 ( relatienr
+                        , sleutelcd
+                        , volgnummer
+                        )
+  "
+  mysqlquery "
+  ALTER
   TABLE dbasetocivicrm.tempimport
   ADD
   INDEX tempimport_FIELD1 ( relatienr
@@ -717,6 +723,7 @@ function droptables () {
   DROP TABLE IF EXISTS dbasetocivicrm.templan;
   DROP TABLE IF EXISTS dbasetocivicrm.tempnotitie;
   DROP TABLE IF EXISTS dbasetocivicrm.tempimport;
+  DROP TABLE IF EXISTS dbasetocivicrm.eatn;
   "
 }
 function createtables () {
@@ -868,6 +875,37 @@ function createtables () {
           ,       1
           ,       3
           ) = 'ass'
+  "
+  mysqlquery "
+  CREATE
+  TABLE   dbasetocivicrm.eatn
+  AS
+  SELECT  vmslrel.*
+  ,       SPLIT_STR ( vmslrel.informatie
+                    , '/'
+                    , 1
+                    ) AS titel
+  ,       SPLIT_STR ( vmslrel.informatie
+                    , '/'
+                    , 2
+                    ) AS voornaam
+  ,       SPLIT_STR ( vmslrel.informatie
+                    , '/'
+                    , 3
+                    ) AS tussenvoegsel
+  ,       SPLIT_STR ( vmslrel.informatie
+                    , '/'
+                    , 4
+                    ) AS achternaam
+  FROM    dbasetocivicrm.VMSLREL  vmslrel
+  WHERE   vmslrel.relatienr
+              BETWEEN $from
+              AND     $till
+  AND     vmslrel.generiek      = 0
+  AND     (   vmslrel.sleutelcd = 'TN'
+          OR  vmslrel.sleutelcd = 'MOB'
+          OR  vmslrel.sleutelcd = 'EA'
+          )
   "
 }
 function dropprocedures () {
@@ -1172,7 +1210,7 @@ function createfunctions () {
       SET i := i + 1;
       SET @r = CONCAT(@r,\"
         LEFT
-        JOIN  dbasetocivicrm.VMSLREL ea\",i,\"
+        JOIN  dbasetocivicrm.eatn ea\",i,\"
         ON    importtable.relatienr         = ea\",i,\".relatienr
         AND   ea\",i,\".sleutelcd           = 'EA'
         AND   (   (   ea\",i,\".informatie  = '///'
@@ -1180,10 +1218,7 @@ function createfunctions () {
                   )
               OR  ea\",i,\".informatie      = importtable.informatie
               )
-              OR  SPLIT_STR ( ea\",i,\".informatie
-                            , '/'
-                            , 2
-                            )               = importtable.voornaam
+              OR  ea\",i,\".voornaam        = importtable.voornaam
         AND   ea\",i,\".generiek            = 0
         AND   ea\",i,\".volgnummer          = \",i
       );
