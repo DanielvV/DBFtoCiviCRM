@@ -192,9 +192,9 @@ INTO    dbasetocivicrm.testimport1  ( Adressfrom
                                     , Emailadressen
                                     , tn1
                                     )
-SELECT  TRIM  ( LEADING '0'
-                FROM    ass.relatienr
-              )
+SELECT  TRIM( LEADING '0'
+              FROM    ass.relatienr
+            )
 ,       'Vigilant extra'
 ,       'N'
 ,       'person'
@@ -240,23 +240,23 @@ SELECT  TRIM  ( LEADING '0'
 ,       ass.cod
 ,       ass.bdat
 ,       ass.mutd
-,       COALESCE  ( ( SELECT  tempopc.new
-                      FROM    dbasetocivicrm.tempopc tempopc
-                      WHERE   tempopc.old = ass.opc
-                    )
-                  , 1
+,       COALESCE( ( SELECT  tempopc.new
+                    FROM    dbasetocivicrm.tempopc tempopc
+                    WHERE   tempopc.old = ass.opc
                   )
+                , 1
+                )
 ,       IF  ( vmslrel.sleutelcd = 'EA'
             , vmslrel.sleutelwrd
             , ''
             )
 ,       IF  ( vmslrel.codebalk = 'MOB'
-            , TRIM  ( LEADING ' ' FROM
-                      SPLIT_STR ( vmslrel.sleutelwrd
-                                , '         '
-                                , 2
-                                )
-                    )
+            , TRIM( LEADING ' ' FROM
+                    SPLIT_STR ( vmslrel.sleutelwrd
+                              , '         '
+                              , 2
+                              )
+                  )
             , ''
             )
 FROM    dbasetocivicrm.ASS      ass
@@ -277,7 +277,6 @@ WHERE   ass.verwijderd = 0
 AND     ass.relatienr
           BETWEEN $from
           AND     $till
-
 "
 echo
 echo Update Voorvoegsel
