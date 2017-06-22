@@ -694,21 +694,21 @@ function createindexes () {
   ADD
   INDEX tempimport_FIELD1 ( relatienr
                           )
-  "
+  " 2>/dev/null
   mysqlquery "
   ALTER
   TABLE dbasetocivicrm.tempimport
   ADD
   INDEX tempimport_FIELD2 ( informatie
                           )
-  "
+  " 2>/dev/null
   mysqlquery "
   ALTER
   TABLE dbasetocivicrm.tempimport
   ADD
   INDEX tempimport_FIELD3 ( voornaam
                           )
-  "
+  " 2>/dev/null
   mysqlquery "
   ALTER
   TABLE dbasetocivicrm.testimport1
