@@ -200,7 +200,7 @@ INTO    dbasetocivicrm.testimport1  ( Adressfrom
                                     , tn1
                                     )
 SELECT  TRIM( LEADING '0'
-              FROM    ass.relatienr
+              FROM    importtable.relatienr
             )
 ,       'Vigilant extra'
 ,       'N'
@@ -242,14 +242,14 @@ SELECT  TRIM( LEADING '0'
                               )
                   )
             )
-,       ass.tav
-,       ass.inforegel
-,       ass.cod
-,       ass.bdat
-,       ass.mutd
+,       importtable.tav
+,       importtable.inforegel
+,       importtable.cod
+,       importtable.bdat
+,       importtable.mutd
 ,       COALESCE( ( SELECT  tempopc.new
                     FROM    dbasetocivicrm.tempopc tempopc
-                    WHERE   tempopc.old = ass.opc
+                    WHERE   tempopc.old = importtable.opc
                   )
                 , 1
                 )
@@ -266,10 +266,10 @@ SELECT  TRIM( LEADING '0'
                   )
             , ''
             )
-FROM    dbasetocivicrm.ASS      ass
+FROM    dbasetocivicrm.tempimport importtable
 INNER
-JOIN    dbasetocivicrm.VMSLREL  vmslrel
-ON      ass.relatienr               = vmslrel.relatienr
+JOIN    dbasetocivicrm.VMSLREL      vmslrel
+ON      importtable.relatienr       = vmslrel.relatienr
 AND     (   (   vmslrel.sleutelcd   = 'TN'
             AND vmslrel.codebalk    = 'MOB'
             AND vmslrel.informatie != '///'
@@ -280,24 +280,11 @@ AND     (   (   vmslrel.sleutelcd   = 'TN'
             )
         )
 AND     vmslrel.generiek            = 0
-AND     (   NOT vmslrel.informatie  = CONCAT( ass.tit
-                                            , '/'
-                                            , ass.na2
-                                            , '/'
-                                            , ass.hisn
-                                            , '/'
-                                            , ass.na1
-                                            )
-        )
-AND     (   NOT SPLIT_STR ( vmslrel.informatie
-                          , '/'
-                          , 2
-                          )         = ass.voornaam
-        )
-WHERE   ass.verwijderd = 0
-AND     ass.relatienr
-          BETWEEN $from
-          AND     $till
+AND     vmslrel.informatie         != importtable.informatie
+AND     SPLIT_STR ( vmslrel.informatie
+                  , '/'
+                  , 2
+                  )                != importtable.voornaam
 "
 echo
 echo Update Voorvoegsel
