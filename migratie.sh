@@ -61,13 +61,13 @@ mysqlquery "
 SET @query1 = CONCAT(\"
 CREATE TABLE dbasetocivicrm.tempimport AS
 SELECT  ass.*
-,       (         SELECT  SPLIT_STR(  omschrijv
-                          ,           '  '
-                          ,           1
-                          )       AS  naam
-                  FROM    dbasetocivicrm.AMCODE amcode
-                  WHERE   amcode.tabelnr = '002'
-                  AND     amcode.waarde  = ass.lan
+,       ( SELECT  SPLIT_STR ( omschrijv
+                            , '  '
+                            , 1
+                            ) AS  naam
+          FROM    dbasetocivicrm.AMCODE amcode
+          WHERE   amcode.tabelnr = '002'
+          AND     amcode.waarde  = ass.lan
         )             AS  'lan2'
 \",
 tnSELECT(6)
@@ -647,24 +647,38 @@ function createindexes () {
   ALTER
   TABLE dbasetocivicrm.ASS
   ADD
-  INDEX ASS_FIELD1 (  relatienr
-        )
+  INDEX ASS_FIELD1  ( relatienr
+                    )
+  "
+  mysqlquery "
+  ALTER
+  TABLE dbasetocivicrm.ASS
+  ADD
+  INDEX ASS_FIELD_CONCAT  ( CONCAT( ass.tit
+                                  , '/'
+                                  , ass.na2
+                                  , '/'
+                                  , ass.hisn
+                                  , '/'
+                                  , ass.na1
+                                  )
+                          )
   "
   mysqlquery "
   ALTER
   TABLE dbasetocivicrm.VMSLREL
   ADD
-  INDEX VMSLREL_FIELD1 (  relatienr
-        )
+  INDEX VMSLREL_FIELD1  ( relatienr
+                        )
   "
   mysqlquery "
   ALTER
   TABLE dbasetocivicrm.VMSLREL
   ADD
-  INDEX VMSLREL_FIELD1_2_6 (  relatienr
-        ,                     sleutelcd
-        ,                     volgnummer
-        )
+  INDEX VMSLREL_FIELD1_2_6  ( relatienr
+                            , sleutelcd
+                            , volgnummer
+                            )
   "
   mysqlquery "
   ALTER
