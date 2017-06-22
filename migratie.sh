@@ -1213,14 +1213,13 @@ function createfunctions () {
         JOIN  dbasetocivicrm.eatn ea\",i,\"
         ON    importtable.relatienr         = ea\",i,\".relatienr
         AND   ea\",i,\".sleutelcd           = 'EA'
+        AND   ea\",i,\".volgnummer          = \",i
         AND   (   (   ea\",i,\".informatie  = '///'
                   OR  ea\",i,\".informatie  = ''
                   )
               OR  ea\",i,\".informatie      = importtable.informatie
-              )
               OR  ea\",i,\".voornaam        = importtable.voornaam
-        AND   ea\",i,\".generiek            = 0
-        AND   ea\",i,\".volgnummer          = \",i
+              )
       );
       IF i <= x THEN
         ITERATE loop1;
