@@ -1,10 +1,10 @@
 #!/bin/bash
+#SELECT * FROM dbasetocivicrm.testimport1 WHERE type='person'
 # Code gebaseerd op:
 # https://stackoverflow.com/a/14579117 (Coalesce equivalent for nth not null value - MySQL)
 # https://www.experts-exchange.com/articles/1250/3-Ways-to-Speed-Up-MySQL.html
 # https://stackoverflow.com/a/1671056 (Can MySQL replace multiple characters?)
 # https://forum.civicrm.org/index.php?topic=7567.0 (Import date created and/or date modified?)
-#SELECT * FROM dbasetocivicrm.testimport1 WHERE type='person'
 host='localhost'
 user='root'
 pass=''
@@ -239,29 +239,19 @@ SELECT  TRIM( LEADING '0'
             , vmslrel.sleutelwrd
             , ''
             )
-,       IF  ( vmslrel.codebalk = 'MOB'
-            , TRIM( LEADING ' ' FROM
-                    SPLIT_STR ( vmslrel.sleutelwrd
-                              , '         '
-                              , 2
-                              )
-                  )
-            , ''
-            )
+,       vmslrel.telefoonnummer
 FROM    dbasetocivicrm.tempimport importtable
 INNER
 JOIN    dbasetocivicrm.eatn       vmslrel
 ON      importtable.relatienr       = vmslrel.relatienr
-AND     (   (   vmslrel.sleutelcd   = 'TN'
+AND     vmslrel.generiek            = 0
+AND     (   vmslrel.sleutelcd       = 'EA'
+        OR  (   vmslrel.sleutelcd   = 'TN'
             AND vmslrel.codebalk    = 'MOB'
-            AND vmslrel.informatie != '///'
-            AND vmslrel.informatie != ''
-            )
-        OR  (   vmslrel.sleutelcd   = 'EA'
-            AND vmslrel.volgnummer != 1
             )
         )
-AND     vmslrel.generiek            = 0
+AND     vmslrel.informatie         != '///'
+AND     vmslrel.informatie         != ''
 AND     vmslrel.informatie         != importtable.informatie
 AND     vmslrel.voornaam           != importtable.voornaam
 "
@@ -899,6 +889,15 @@ function createtables () {
                     , '/'
                     , 4
                     ) AS achternaam
+  ,       IF  ( vmslrel.sleutelcd = 'TN'
+              , TRIM( LEADING ' ' FROM
+                      SPLIT_STR ( vmslrel.sleutelwrd
+                                , '         '
+                                , 2
+                                )
+                    )
+              , ''
+              )       AS telefoonnummer
   FROM    dbasetocivicrm.VMSLREL  vmslrel
   WHERE   vmslrel.relatienr
               BETWEEN $from
@@ -957,12 +956,12 @@ function createprocedures () {
       DECLARE SQLStatement VARCHAR(8192);
       SET SQLStatement = '
         INSERT INTO $cividatabase.civicrm_bank_account  ( id
-                                                  , created_date
-                                                  , modified_date
-                                                  , data_raw
-                                                  , data_parsed
-                                                  , contact_id
-                                                  )
+                                                        , created_date
+                                                        , modified_date
+                                                        , data_raw
+                                                        , data_parsed
+                                                        , contact_id
+                                                        )
       ';
       loop1: LOOP
         SET i := i + 1;
@@ -1117,12 +1116,7 @@ function createfunctions () {
     loop1: LOOP
       SET i := i + 1;
       SET @r = CONCAT(@r,\"
-        , TRIM( LEADING ' ' FROM
-                SPLIT_STR(  tn\",i,\".sleutelwrd
-                ,           '         '
-                ,           2
-                )
-          )
+        , tn\",i,\".telefoonnummer
       \");
       IF i < x THEN
         ITERATE loop1;
@@ -1192,9 +1186,11 @@ function createfunctions () {
         AND   tn\",i,\".volgnummer      = \",i,\"
         AND   tn\",i,\".sleutelcd       = 'TN'
         AND   tn\",i,\".codebalk       != 'FAX'
-        AND   (   tn\",i,\".informatie  = '///'
+        AND   (   tn\",i,\".codebalk    = 'TEL'
+              OR  tn\",i,\".informatie  = '///'
               OR  tn\",i,\".informatie  = ''
-              OR  tn\",i,\".codebalk    = 'TEL'
+              OR  tn\",i,\".informatie  = importtable.informatie
+              OR  tn\",i,\".voornaam    = importtable.voornaam
               )
       \");
       IF i <= x THEN
@@ -1216,8 +1212,8 @@ function createfunctions () {
         LEFT
         JOIN  dbasetocivicrm.eatn ea\",i,\"
         ON    importtable.relatienr     = ea\",i,\".relatienr
-        AND   ea\",i,\".sleutelcd       = 'EA'
         AND   ea\",i,\".volgnummer      = \",i,\"
+        AND   ea\",i,\".sleutelcd       = 'EA'
         AND   (   ea\",i,\".informatie  = '///'
               OR  ea\",i,\".informatie  = ''
               OR  ea\",i,\".informatie  = importtable.informatie
