@@ -126,7 +126,7 @@ SELECT  TRIM(     LEADING '0'
 ,       CONCAT(   importtable.ad1
         ,         ' '
         ,         importtable.huisnr
-        )                     AS  'Straat en huisnummer'
+        )                     AS  'Straatenhuisnummer'
 ,       importtable.ad1       AS  'Straatnaam'
 ,       importtable.huisnr    AS  'Huisnummer'
 ,       importtable.pos       AS  'Postcode'
@@ -195,7 +195,7 @@ INTO    dbasetocivicrm.testimport1  ( Adressfrom
                                     , Achternaam
                                     , tav
                                     , inforegel
-                                    , 'Straat en huisnummer'
+                                    , Straatenhuisnummer
                                     , Straatnaam
                                     , Huisnummer
                                     , Postcode
