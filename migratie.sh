@@ -113,7 +113,7 @@ SELECT  TRIM(     LEADING '0'
 ,       CAST(     'Vigilant'
                   AS CHAR(32)
         )                     AS  'Herkomst'
-,       '00000000'            AS  'Adressfrom'
+,       '00000000'            AS  'Adresvan'
 ,       'N'                   AS  'status'
 ,       'person'              AS  'type'
 ,       importtable.tit       AS  'Voorvoegsel'
@@ -185,7 +185,7 @@ echo
 echo Add extra contacts
 mysqlquery "
 INSERT
-INTO    dbasetocivicrm.testimport1  ( Adressfrom
+INTO    dbasetocivicrm.testimport1  ( Adresvan
                                     , Herkomst
                                     , status
                                     , type
