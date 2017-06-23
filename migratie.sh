@@ -1189,7 +1189,14 @@ function createfunctions () {
         AND   (   tn\",i,\".codebalk    = 'TEL'
               OR  tn\",i,\".informatie  = '///'
               OR  tn\",i,\".informatie  = ''
-              OR  tn\",i,\".informatie  = importtable.informatie
+              OR  tn\",i,\".informatie  = CONCAT( ass.tit
+                                                , '/'
+                                                , ass.na2
+                                                , '/'
+                                                , ass.hisn
+                                                , '/'
+                                                , ass.na1
+                                                )
               OR  tn\",i,\".voornaam    = importtable.voornaam
               )
       \");
