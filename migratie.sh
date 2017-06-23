@@ -1189,7 +1189,7 @@ function createfunctions () {
         AND   (   tn\",i,\".codebalk    = 'TEL'
               OR  tn\",i,\".informatie  = '///'
               OR  tn\",i,\".informatie  = ''
-              OR  tn\",i,\".informatie  = informatie
+              OR  tn\",i,\".informatie  = ass.informatie
               OR  tn\",i,\".voornaam    = ass.voornaam
               )
       \");
