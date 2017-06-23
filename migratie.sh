@@ -1189,15 +1189,8 @@ function createfunctions () {
         AND   (   tn\",i,\".codebalk    = 'TEL'
               OR  tn\",i,\".informatie  = '///'
               OR  tn\",i,\".informatie  = ''
-              OR  tn\",i,\".informatie  = CONCAT( ass.tit
-                                                , '/'
-                                                , ass.na2
-                                                , '/'
-                                                , ass.hisn
-                                                , '/'
-                                                , ass.na1
-                                                )
-              OR  tn\",i,\".voornaam    = importtable.voornaam
+              OR  tn\",i,\".informatie  = informatie
+              OR  tn\",i,\".voornaam    = ass.voornaam
               )
       \");
       IF i <= x THEN
