@@ -195,6 +195,12 @@ INTO    dbasetocivicrm.testimport1  ( Adressfrom
                                     , Achternaam
                                     , tav
                                     , inforegel
+                                    , 'Straat en huisnummer'
+                                    , Straatnaam
+                                    , Huisnummer
+                                    , Postcode
+                                    , Plaats
+                                    , Land
                                     , cod
                                     , Gemaakt
                                     , Wijzigingsdatum
@@ -226,6 +232,18 @@ SELECT  TRIM( LEADING '0'
             )
 ,       importtable.tav
 ,       importtable.inforegel
+,       CONCAT(   importtable.ad1
+        ,         ' '
+        ,         importtable.huisnr
+        )
+,       importtable.ad1
+,       importtable.huisnr
+,       importtable.pos
+,       importtable.pla
+,       COALESCE((SELECT  templan.new
+                  FROM    dbasetocivicrm.templan templan
+                  WHERE   templan.old = importtable.lan2
+        ), importtable.lan2)
 ,       importtable.cod
 ,       importtable.bdat
 ,       importtable.mutd
