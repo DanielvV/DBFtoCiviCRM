@@ -315,15 +315,7 @@ echo Update contact type of person or organization
 mysqlquery "
 UPDATE  dbasetocivicrm.testimport1
 SET     type='org'
-WHERE INSTR(cod, 'BED')
-OR    INSTR(cod, 'CRE')
-OR    INSTR(cod, 'KER')
-OR    INSTR(cod, 'PRI')
-OR    INSTR(cod, 'REL')
-OR    INSTR(cod, 'TGN')
-OR    Voorvoegsel='Stichting'
-OR    Voorvoegsel='Redactie'
-OR    Voorvoegsel='Vereniging'
+WHERE INSTR(cod, 'TGN')
 "
 echo
 echo Add contact users for change history
