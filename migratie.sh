@@ -316,7 +316,6 @@ mysqlquery "
 UPDATE  dbasetocivicrm.testimport1
 SET     type='org'
 WHERE INSTR(cod, 'TGN')
-
 "
 echo
 echo Add contact users for change history
