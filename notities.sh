@@ -22,9 +22,8 @@ function notities () {
   echo notities...
   dir=$HOME/SoL/
   zip=VNB
-  mkdir    $dir$zip
   unzip -q $dir$zip.zip \
-        -d $dir$zip
+        -d $dir
   rm       $dir$zip/NT005126.VNB
   for i in $dir$zip/*
   do echo -n "\"\"\");
