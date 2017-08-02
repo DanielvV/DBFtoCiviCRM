@@ -1,17 +1,23 @@
 #!/bin/bash
+hostname=$(cat $HOME/GIT/DBFToMySQL/config.php \
+          | grep host \
+          | tail -n 1 \
+          | cut -d "'" -f 2 \
+        )
+database=$(cat $HOME/GIT/DBFToMySQL/config.php \
+          | grep db_name \
+          | tail -n 1 \
+          | cut -d "'" -f 2 \
+        )
+password=$( cat $HOME/GIT/DBFToMySQL/config.php \
+          | grep passwd \
+          | cut -d "'" -f 2 \
+        )
 function mysqlquery () {
   echo mysqlquery...
-#        -p$pass \
-  mysql -h $(cat $HOME/GIT/DBFToMySQL/config.php \
-             | grep host \
-             | tail -n 1 \
-             | cut -d "'" -f 2 \
-           ) \
+  mysql -h $hostname \
         -u civicrm \
-        -p$( cat $HOME/GIT/DBFToMySQL/config.php \
-             | grep passwd \
-             | cut -d "'" -f 2 \
-           ) \
+        -p$password \
         civicrm \
         -e "
           SET
@@ -23,17 +29,44 @@ function mysqlquery () {
         2>&1 \
         | grep -v 'Using a password on the command line interface can be insecure.'
 }
-
+function run_sol_import_api($data, $api) {
+  echo Copy $data to the civicrm.sol_import table
+  mysqlquery "
+  DELETE
+  FROM    sol_import
+  "
+  mysqlquery "
+  INSERT
+  INTO    sol_import(
+            Contactnummer, $data
+          )
+  SELECT  Contactnummer, $data
+  FROM    $database.preparetable
+  "
+  echo
+  echo Run the solimport.$api api
+  ssh root@$hostname "cd /var/www/${hostname/.*}/; drush cvapi solimport.$api"
+}
+echo
+run_sol_import_api('cod', 'cod')
+echo
+run_sol_import_api('Emailadressen', 'email')
+echo
+run_sol_import_api('Adresvan', 'adresvan')
+echo
+echo Populate the sol_import_incasso table
 mysqlquery "
-DROP TABLE IF EXISTS dbasetocivicrm.tempp01n
-;
+DROP TABLE IF EXISTS $database.tempp01n
+"
+mysqlquery "
 CREATE
-TABLE   dbasetocivicrm.tempp01n ( old INT
+TABLE   $database.tempp01n ( old INT
                                 , new VARCHAR(40)
                                 )
-;
+"
+mysqlquery "
 INSERT
-INTO    dbasetocivicrm.tempp01n
+INTO    $database.tempp01n
 VALUES  ( 8080
         , '8080 Giften extra actie Ned'
         )
@@ -67,10 +100,12 @@ VALUES  ( 8080
 ,       ( 8910
         , '8910 Cursusgelden'
         )
-;
+"
+mysqlquery "
 DELETE
 FROM    sol_import_incasso
-;
+"
+mysqlquery "
 INSERT
 INTO    sol_import_incasso
           ( financial_type_id
@@ -86,7 +121,7 @@ INTO    sol_import_incasso
           )
 SELECT  COALESCE(
           ( SELECT  tempp01n.new
-            FROM    dbasetocivicrm.tempp01n tempp01n
+            FROM    $database.tempp01n tempp01n
             WHERE   tempp01n.old = pol.p01n
           )
         , '8100 Giften algemeen'
@@ -106,7 +141,7 @@ SELECT  COALESCE(
 ,       COALESCE(
           SUBSTR(
             ( SELECT  bhboekin.bankinfo
-              FROM    dbasetocivicrm.BHBOEKIN bhboekin
+              FROM    $database.BHBOEKIN bhboekin
               WHERE   bhboekin.relatienr = pol.relatienr
               AND     SUBSTR(
                         bhboekin.bankinfo
@@ -138,17 +173,14 @@ SELECT  COALESCE(
         )
 ,       pol.banknummer
 ,       pol.omschrijv
-FROM    dbasetocivicrm.POL pol
+FROM    $database.POL pol
 WHERE   pol.verwijderd = 0
 AND NOT pol.vervalper = ''
-;
-DROP TABLE IF EXISTS dbasetocivicrm.tempp01n
-;
 "
-
-exit
-
-SELECT  *
-FROM    sol_import_incasso
-;
+mysqlquery "
+DROP TABLE IF EXISTS $database.tempp01n
+"
+echo
+echo run the solimport.incasso api
+ssh root@$hostname "cd /var/www/${hostname/.*}/; drush cvapi solimport.$api"
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-#SELECT * FROM dbasetocivicrm.testimport1 WHERE type='person'
+#SELECT * FROM dbasetocivicrm.preparetable WHERE type='person'
 # Code gebaseerd op:
 # https://stackoverflow.com/a/14579117 (Coalesce equivalent for nth not null value - MySQL)
 # https://www.experts-exchange.com/articles/1250/3-Ways-to-Speed-Up-MySQL.html
@@ -99,13 +99,13 @@ EXECUTE query1
 echo
 echo Do the second import query
 mysqlquery "
-DROP TABLE IF EXISTS dbasetocivicrm.testimport1
+DROP TABLE IF EXISTS dbasetocivicrm.preparetable
 "
 createindexes
 mysqlquery "
 SET @query2 = CONCAT(\"
 CREATE
-TABLE   testimport1
+TABLE   preparetable
 AS
 SELECT  TRIM(     LEADING '0'
                   FROM    importtable.relatienr
@@ -114,7 +114,6 @@ SELECT  TRIM(     LEADING '0'
                   AS CHAR(32)
         )                     AS  'Herkomst'
 ,       '00000000'            AS  'Adresvan'
-,       'N'                   AS  'status'
 ,       'person'              AS  'type'
 ,       importtable.tit       AS  'Voorvoegsel'
 ,       importtable.na2       AS  'Voornaam'
@@ -165,19 +164,19 @@ FROM   @query2
 EXECUTE query2
 "
 echo
-echo Add primary key testimport1
+echo Add primary key preparetable
 mysqlquery "
 ALTER
-TABLE   dbasetocivicrm.testimport1
+TABLE   dbasetocivicrm.preparetable
 ADD
 PRIMARY
 KEY   ( Contactnummer )
 "
 echo
-echo Autoincrement testimport1
+echo Autoincrement preparetable
 mysqlquery "
 ALTER
-TABLE   dbasetocivicrm.testimport1
+TABLE   dbasetocivicrm.preparetable
 MODIFY
 COLUMN  Contactnummer INT auto_increment
 "
@@ -185,9 +184,8 @@ echo
 echo Add extra contacts
 mysqlquery "
 INSERT
-INTO    dbasetocivicrm.testimport1  ( Adresvan
+INTO    dbasetocivicrm.preparetable  ( Adresvan
                                     , Herkomst
-                                    , status
                                     , type
                                     , Voorvoegsel
                                     , Voornaam
@@ -212,7 +210,6 @@ SELECT  TRIM( LEADING '0'
               FROM    importtable.relatienr
             )
 ,       'Vigilant extra'
-,       'N'
 ,       'person'
 ,       vmslrel.titel
 ,       vmslrel.voornaam
@@ -276,44 +273,44 @@ AND     vmslrel.voornaam           != importtable.voornaam
 echo
 echo Update Voorvoegsel
 mysqlquery "
-UPDATE  dbasetocivicrm.testimport1
+UPDATE  dbasetocivicrm.preparetable
 SET     Voorvoegsel='Stichting'
 WHERE   Voorvoegsel='Stg.'
 "
 mysqlquery "
-UPDATE  dbasetocivicrm.testimport1
+UPDATE  dbasetocivicrm.preparetable
 SET     Voorvoegsel='Redactie'
 WHERE   Voorvoegsel='Red.'
 "
 mysqlquery "
-UPDATE  dbasetocivicrm.testimport1
+UPDATE  dbasetocivicrm.preparetable
 SET     Voorvoegsel='Vereniging'
 WHERE   Voorvoegsel='Ver.'
 "
 mysqlquery "
-UPDATE  dbasetocivicrm.testimport1
+UPDATE  dbasetocivicrm.preparetable
 SET     Voorvoegsel=''
 WHERE   Voorvoegsel='Diaconie'
 "
 mysqlquery "
-UPDATE  dbasetocivicrm.testimport1
+UPDATE  dbasetocivicrm.preparetable
 SET     Voorvoegsel=''
 WHERE   Voorvoegsel='Diakonie'
 "
 mysqlquery "
-UPDATE  dbasetocivicrm.testimport1
+UPDATE  dbasetocivicrm.preparetable
 SET     Voorvoegsel='Dhr./Mw.'
 WHERE   Voorvoegsel='Dhr./mw.'
 "
 mysqlquery "
-UPDATE  dbasetocivicrm.testimport1
+UPDATE  dbasetocivicrm.preparetable
 SET     Voorvoegsel='Dhr./Mw.'
 WHERE   Voorvoegsel='Dhr./mw'
 "
 echo
 echo Update contact type of person or organization
 mysqlquery "
-UPDATE  dbasetocivicrm.testimport1
+UPDATE  dbasetocivicrm.preparetable
 SET     type='org'
 WHERE INSTR(cod, 'TGN')
 "
@@ -321,64 +318,55 @@ echo
 echo Add contact users for change history
 mysqlquery "
 INSERT
-INTO dbasetocivicrm.testimport1 ( Contactnummer
-                                , status
+INTO dbasetocivicrm.preparetable ( Contactnummer
                                 , type
                                 , Voornaam
                                 , Tussenvoegsel
                                 , Achternaam
                                 )
 VALUES  ( 71
-        , 'N'
         , 'person'
         , 'Joop'
         , ''
         , 'Buker'
         )
 ,       ( 72
-        , 'N'
         , 'person'
         , 'Daniël'
         , 'van'
         , 'Vuuren'
         )
 ,       ( 73
-        , 'N'
         , 'person'
         , 'Alex'
         , 'van'
         , 'Vuuren'
         )
 ,       ( 74
-        , 'N'
         , 'person'
         , 'Wim'
         , ''
         , 'Nelisse'
         )
 ,       ( 75
-        , 'N'
         , 'person'
         , 'Ariëtte'
         , ''
         , 'Westland'
         )
 ,       ( 76
-        , 'N'
         , 'person'
         , 'Albert'
         , ''
         , 'Holtvluwer'
         )
 ,       ( 77
-        , 'N'
         , 'person'
         , 'Bert'
         , ''
         , 'Keizer'
         )
 ,       ( 78
-        , 'N'
         , 'person'
         , 'Joke'
         , ''
@@ -389,11 +377,11 @@ echo
 echo Add external id
 mysqlquery "
 ALTER
-TABLE   dbasetocivicrm.testimport1
+TABLE   dbasetocivicrm.preparetable
 ADD     Externe_ID INT(12)
 "
 mysqlquery "
-UPDATE  dbasetocivicrm.testimport1
+UPDATE  dbasetocivicrm.preparetable
 SET     Externe_ID = Contactnummer
 "
 echo
@@ -411,7 +399,7 @@ INSERT INTO $cividatabase.civicrm_contact ( id
                                           )
 SELECT  Contactnummer
 ,       'Individual'
-FROM  dbasetocivicrm.testimport1
+FROM  dbasetocivicrm.preparetable
 WHERE Contactnummer
         BETWEEN $from
         AND     $till
@@ -448,7 +436,7 @@ INTO    $cividatabase.civicrm_contact ( id
 SELECT  Contactnummer
 ,       Gemaakt
 ,       Wijzigingsdatum
-FROM    dbasetocivicrm.testimport1
+FROM    dbasetocivicrm.preparetable
 WHERE   Gemaakt != '1970-01-01'
 ON      DUPLICATE KEY
 UPDATE  created_date  = Gemaakt
@@ -471,7 +459,7 @@ SELECT  'civicrm_contact'
         )
 ,       Wijziger
 ,       Gemaakt
-FROM    dbasetocivicrm.testimport1
+FROM    dbasetocivicrm.preparetable
 WHERE   Gemaakt != '1970-01-01'
 UNION ALL
 SELECT  'civicrm_contact'
@@ -481,7 +469,7 @@ SELECT  'civicrm_contact'
         )
 ,       Wijziger
 ,       Wijzigingsdatum
-FROM    dbasetocivicrm.testimport1
+FROM    dbasetocivicrm.preparetable
 WHERE   Wijzigingsdatum != '1970-01-01'
 "
 echo
@@ -643,8 +631,8 @@ function dropindexes () {
   mysqlquery "
   CALL
   DROP_INDEX_IF_EXISTS( 'dbasetocivicrm'
-  ,                     'testimport1'
-  ,                     'testimport1_FIELD1'
+  ,                     'preparetable'
+  ,                     'preparetable_FIELD1'
   )
   "
 }
@@ -713,9 +701,9 @@ function createindexes () {
   "
   mysqlquery "
   ALTER
-  TABLE dbasetocivicrm.testimport1
+  TABLE dbasetocivicrm.preparetable
   ADD
-  INDEX testimport1_FIELD1 (Contactnummer)
+  INDEX preparetable_FIELD1 (Contactnummer)
   "
 }
 function droptables () {
@@ -987,7 +975,7 @@ function createprocedures () {
                     ,       '\\\"}'
                     )
           ,         Contactnummer
-          FROM      dbasetocivicrm.testimport1
+          FROM      dbasetocivicrm.preparetable
           WHERE NOT (   iban\",i,\" IS  NULL
                     OR  iban\",i,\" =   ''
                     OR  bic\",i,\"  IS  NULL
@@ -1002,7 +990,7 @@ function createprocedures () {
           ,         '{}'
           ,         '{}'
           ,         Contactnummer
-          FROM      dbasetocivicrm.testimport1
+          FROM      dbasetocivicrm.preparetable
           WHERE     (   NOT (   iban\",i,\" IS  NULL
                             OR  iban\",i,\" =   ''
                             )
@@ -1041,10 +1029,10 @@ function createprocedures () {
           SELECT    iban\",i,\"
           ,         872
           ,         bank_account.id
-          FROM      dbasetocivicrm.testimport1    testimport1
+          FROM      dbasetocivicrm.preparetable    preparetable
           INNER
           JOIN      $cividatabase.civicrm_bank_account  bank_account
-          ON        CONCAT( testimport1.Contactnummer
+          ON        CONCAT( preparetable.Contactnummer
                     ,       \",i,\"
                     ) = bank_account.id
           WHERE NOT (   iban\",i,\" IS  NULL
