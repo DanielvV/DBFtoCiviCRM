@@ -20,13 +20,15 @@ mysql -h $(cat $HOME/GIT/DBFToMySQL/config.php \
       dbasetocivicrm | \
 sed 's/,/;/g' |
 sed 's/\t/,/g' |
-sed 's/POSTBK,/Bank,/g' |
-sed 's/ABN-AM,/Bank,/g' |
-sed 's/INKOOP,/Bank,/g' |
-sed 's/MEMO,/Bank,/g' |
-sed 's/KAS,/Kas,/g' |
-sed 's/,D,[A-Z]{3},/&-/g' |
-sed 's/\([0-9\-]{10},[0-9\-]{10},[0-9:]{8}\),,/,\1,1,/g' |
+sed 's/^POSTBK,\(.*,P,G01010\)/SEPA DD One-off Transaction,\1/g' |
+sed 's/^POSTBK,/Bank,/g' |
+sed 's/^ABN-AM,/Bank,/g' |
+sed 's/^INKOOP,/Bank,/g' |
+sed 's/^MEMO,/Bank,/g' |
+sed 's/^KAS,/Kas,/g' |
+sed 's/,D,[A-Z]\{3\},/&-/g' |
+sed 's/,0000001,/,2,/g' |
+sed 's/,\(,,[0-9]{1,2},,,,,,,,\)/,2\1/g' |
 sed 's/,80[1-7][0-9],/,8100,/g' |
 sed 's/,8080,/,8080 Giften extra actie Ned,/g' |
 sed 's/,8085,/,8085 Giften Er is Hulp,/g' |
@@ -40,6 +42,7 @@ sed 's/,8800,/,8800 Inkomsten Conferentie,/g' |
 sed 's/,8900,/,8900 Diverse opbrengst,/g' |
 sed 's/,8910,/,8910 Cursusgelden,/g' >> \
 "$HOME/SoL/bhboekin.csv"
+
 
 exit
 
