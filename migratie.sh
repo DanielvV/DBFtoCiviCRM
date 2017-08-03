@@ -365,6 +365,17 @@ AND NOT INSTR(  cod
         ,       'K12'
         )
 "
+mysqlquery "
+UPDATE  dbasetocivicrm.preparetable
+SET     Straatenhuisnummer = ''
+,       Straatnaam = ''
+,       Huisnummer = ''
+,       Postcode = ''
+,       Plaats = ''
+WHERE   INSTR(  cod
+        ,       'OPA'
+        )
+"
 echo
 echo Add contact users for change history
 mysqlquery "
