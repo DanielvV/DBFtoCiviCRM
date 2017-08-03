@@ -86,8 +86,7 @@ FROM    dbasetocivicrm.ASS        ass
 \",
 tnJOIN(6)
 ,\"
-WHERE   ass.verwijderd  = 0
-AND     ass.relatienr BETWEEN $from AND $till
+WHERE   ass.relatienr BETWEEN $from AND $till
 \"
 )
 ;
