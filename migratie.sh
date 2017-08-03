@@ -311,18 +311,80 @@ echo Update contact type of person or organization
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
 SET     type='org'
-WHERE INSTR(cod, 'TGN')
+WHERE   INSTR(  cod
+        ,       'TGN'
+        )
+"
+mysqlquery "
+UPDATE  dbasetocivicrm.preparetable
+SET     Achternaam  = CONCAT_WS(  ' '
+                      ,           Voorvoegsel
+                      ,           Voornaam
+                      ,           Tussenvoegsel
+                      ,           Achternaam
+                      )
+WHERE   type='org'
+"
+mysqlquery "
+UPDATE  dbasetocivicrm.preparetable
+SET     Achternaam  = CONCAT( Achternaam
+                      ,       ' (diaconie)'
+                      )
+WHERE   INSTR(  cod
+        ,       'KDI'
+        )
+"
+mysqlquery "
+UPDATE  dbasetocivicrm.preparetable
+SET     Achternaam  = CONCAT( Achternaam
+                      ,       ' (secretariaat)'
+                      )
+WHERE ( INSTR(  cod
+        ,       'K09'
+        )
+OR      INSTR(  cod
+        ,       'K12'
+        )
+      )
+AND NOT INSTR(  cod
+        ,       'KDI'
+        )
+"
+mysqlquery "
+UPDATE  dbasetocivicrm.preparetable
+SET     Achternaam  = CONCAT( Achternaam
+                      ,       ' (scriba)'
+                      )
+WHERE ( INSTR(  cod
+        ,       'K0'
+        )
+OR      INSTR(  cod
+        ,       'K1'
+        )
+OR      INSTR(  cod
+        ,       'K2'
+        )
+      )
+AND NOT INSTR(  cod
+        ,       'KDI'
+        )
+AND NOT INSTR(  cod
+        ,       'K09'
+        )
+AND NOT INSTR(  cod
+        ,       'K12'
+        )
 "
 echo
 echo Add contact users for change history
 mysqlquery "
 INSERT
-INTO dbasetocivicrm.preparetable ( Contactnummer
-                                , type
-                                , Voornaam
-                                , Tussenvoegsel
-                                , Achternaam
-                                )
+INTO dbasetocivicrm.preparetable  ( Contactnummer
+                                  , type
+                                  , Voornaam
+                                  , Tussenvoegsel
+                                  , Achternaam
+                                  )
 VALUES  ( 71
         , 'person'
         , 'Joop'
@@ -402,6 +464,19 @@ FROM  dbasetocivicrm.preparetable
 WHERE Contactnummer
         BETWEEN $from
         AND     $till
+AND   type = 'person'
+"
+mysqlquery "
+INSERT INTO $cividatabase.civicrm_contact ( id
+                                          , contact_type
+                                          )
+SELECT  Contactnummer
+,       'Organization'
+FROM  dbasetocivicrm.preparetable
+WHERE Contactnummer
+        BETWEEN $from
+        AND     $till
+AND   type = 'org'
 "
 echo
 echo Drop indexes, tables, procedures and functions
