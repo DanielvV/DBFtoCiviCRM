@@ -339,34 +339,24 @@ UPDATE  dbasetocivicrm.preparetable
 SET     Achternaam  = CONCAT( Achternaam
                       ,       ' (secretariaat)'
                       )
-WHERE ( INSTR(  cod
+WHERE   INSTR(  cod
+        ,       'KOR'
+        )
+AND   ( INSTR(  cod
         ,       'K09'
         )
 OR      INSTR(  cod
         ,       'K12'
         )
       )
-AND NOT INSTR(  cod
-        ,       'KDI'
-        )
 "
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
 SET     Achternaam  = CONCAT( Achternaam
                       ,       ' (scriba)'
                       )
-WHERE ( INSTR(  cod
-        ,       'K0'
-        )
-OR      INSTR(  cod
-        ,       'K1'
-        )
-OR      INSTR(  cod
-        ,       'K2'
-        )
-      )
-AND NOT INSTR(  cod
-        ,       'KDI'
+WHERE   INSTR(  cod
+        ,       'KOR'
         )
 AND NOT INSTR(  cod
         ,       'K09'
