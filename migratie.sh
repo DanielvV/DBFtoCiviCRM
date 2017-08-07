@@ -10,9 +10,9 @@ user='root'
 pass=''
 database='dbasetocivicrm'
 encoding='CP437'
-  from=70
-  till=100000
-  cividatabase=civicrm
+from=70
+till=100000
+cividatabase=civicrm
 case $HOSTNAME in
 civicrm)
   till=10000
@@ -342,13 +342,20 @@ SET     Achternaam  = CONCAT( Achternaam
 WHERE   INSTR(  cod
         ,       'KOR'
         )
-AND   ( INSTR(  cod
-        ,       'K09'
+AND     ( INSTR(  cod
+          ,       'K09'
+          )
+  OR      INSTR(  cod
+          ,       'K12'
+          )
         )
-OR      INSTR(  cod
-        ,       'K12'
+AND NOT ( INSTR(  cod
+          ,       'KDI'
+          )
+  OR      INSTR(  cod
+          ,       'WAKORD'
+          )
         )
-      )
 "
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
@@ -358,11 +365,18 @@ SET     Achternaam  = CONCAT( Achternaam
 WHERE   INSTR(  cod
         ,       'KOR'
         )
-AND NOT INSTR(  cod
-        ,       'K09'
-        )
-AND NOT INSTR(  cod
-        ,       'K12'
+AND NOT ( INSTR(  cod
+          ,       'K09'
+          )
+  OR      INSTR(  cod
+          ,       'K12'
+          )
+  OR      INSTR(  cod
+          ,       'KDI'
+          )
+  OR      INSTR(  cod
+          ,       'WAKORD'
+          )
         )
 "
 mysqlquery "
