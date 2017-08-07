@@ -527,6 +527,7 @@ SELECT  Contactnummer
 ,       Wijzigingsdatum
 FROM    dbasetocivicrm.preparetable
 WHERE   Gemaakt != '1970-01-01'
+AND     Wijzigingsdatum != '1970-01-01'
 ON      DUPLICATE KEY
 UPDATE  created_date  = Gemaakt
 ,       modified_date = Wijzigingsdatum
