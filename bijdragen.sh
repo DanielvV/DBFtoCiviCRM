@@ -1,6 +1,7 @@
 #!/bin/bash
-echo 'payment_instrument,receive_date,boekstuk,financial_type,kostenpl,deb_cred,currency,total_amount,bedragvv,note,document,doc_regel,periode,subadmin,verwerkt,autoboek,doc_totaal,tot_deb,tot_cre,opc,bdat,mutd,tijd,contribution_contact_id,project,aant_dr,fondsboek,banknummer,bankinfo,factuurgrp,bewerking,betaalwyze,bankcode,storno' > \
-"$HOME/SoL/bhboekin.csv"
+cd "$HOME/SoL"
+echo "payment_instrument,receive_date,boekstuk,financial_type,kostenpl,deb_cred,currency,total_amount,bedragvv,note,document,doc_regel,periode,subadmin,verwerkt,autoboek,doc_totaal,tot_deb,tot_cre,opc,bdat,mutd,tijd,contribution_contact_id,project,aant_dr,fondsboek,banknummer,bankinfo,factuurgrp,bewerking,betaalwyze,bankcode,storno" > \
+bhboekin.csv
 echo "
   SELECT *
   FROM BHBOEKIN
@@ -17,7 +18,7 @@ mysql -h $(cat $HOME/GIT/DBFToMySQL/config.php \
            | cut -d "'" -f 2 \
          ) \
       -N -B -D \
-      dbasetocivicrm | \
+      dbasetocivicrm |
 sed 's/,/;/g' |
 sed 's/\t/,/g' |
 sed 's/^POSTBK,\(.*,P,G01010\)/SEPA DD One-off Transaction,\1/g' |
@@ -30,6 +31,16 @@ sed 's/,D,[A-Z]\{3\},/&-/g' |
 sed 's/,0000001,/,2,/g' |
 sed 's/,\(,,[0-9]{1,2},,,,,,,,\)/,2\1/g' |
 sed 's/,80[1-7][0-9],/,8100,/g' |
+sed 's/,8081,/,8080,/g' |
+sed 's/,8092,/,8090,/g' |
+sed 's/,811[1-5],/,8090,/g' |
+sed 's/,811[67],/,8100,/g' |
+sed 's/,8120,/,8100,/g' |
+sed 's/,84[24]0,/,8100,/g' |
+sed 's/,85[49]0,/,8100,/g' |
+sed 's/,8700,/,8100,/g' |
+sed 's/,\([0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}\),\([0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}\),\([0-9]\{2\}\:[0-9]\{2\}\:[0-9]\{2\}\),,/,\1,\2,\3,1,/g' |
+sed 's/,\([0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}\),\([0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}\),,,/,\1,\2,,1,/g' |
 sed 's/,8080,/,8080 Giften extra actie Ned,/g' |
 sed 's/,8085,/,8085 Giften Er is Hulp,/g' |
 sed 's/,8090,/,8090 Giften actie Buitenland,/g' |
@@ -41,8 +52,8 @@ sed 's/,8520,/,8520 Giften Mars vh Leven,/g' |
 sed 's/,8800,/,8800 Inkomsten Conferentie,/g' |
 sed 's/,8900,/,8900 Diverse opbrengst,/g' |
 sed 's/,8910,/,8910 Cursusgelden,/g' >> \
-"$HOME/SoL/bhboekin.csv"
-
+bhboekin.csv
+tail -n +2 bhboekin.csv | split --lines=20000 --filter='head -n 1 ${FILE/-*}.csv > ${FILE/-a/-}.csv; cat >> ${FILE/-a/-}.csv' - bhboekin-
 
 exit
 

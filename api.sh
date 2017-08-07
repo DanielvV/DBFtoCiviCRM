@@ -13,6 +13,9 @@ password=$( cat $HOME/GIT/DBFToMySQL/config.php \
           | grep passwd \
           | cut -d "'" -f 2 \
         )
+function main () {
+  step$1
+}
 function mysqlquery () {
   echo mysqlquery...
   mysql -h $hostname \
@@ -29,8 +32,8 @@ function mysqlquery () {
         2>&1 \
         | grep -v 'Using a password on the command line interface can be insecure.'
 }
-function run_sol_import_api($data, $api) {
-  echo Copy $data to the civicrm.sol_import table
+function run_sol_import_api() {
+  echo Copy $1 to the civicrm.sol_import table
   mysqlquery "
   DELETE
   FROM    sol_import
@@ -38,21 +41,27 @@ function run_sol_import_api($data, $api) {
   mysqlquery "
   INSERT
   INTO    sol_import(
-            Contactnummer, $data
+            Contactnummer, $1
           )
-  SELECT  Contactnummer, $data
+  SELECT  Contactnummer, $1
   FROM    $database.preparetable
   "
   echo
-  echo Run the solimport.$api api
-  ssh root@$hostname "cd /var/www/${hostname/.*}/; drush cvapi solimport.$api"
+  echo Run the solimport.$2 api
+  ssh root@$hostname "cd /var/www/${hostname/.*}/; drush cvapi SolImport.$2 limit=100000000"
 }
+function step () {
+  echo Please specify step number
+}
+function step1 () {
 echo
-run_sol_import_api('cod', 'cod')
+run_sol_import_api 'Adresvan' 'adresvan'
 echo
-run_sol_import_api('Emailadressen', 'email')
+run_sol_import_api 'Emailadressen' 'email'
 echo
-run_sol_import_api('Adresvan', 'adresvan')
+run_sol_import_api 'cod' 'cod'
+}
+function step2 () {
 echo
 echo Populate the sol_import_incasso table
 mysqlquery "
@@ -182,5 +191,6 @@ DROP TABLE IF EXISTS $database.tempp01n
 "
 echo
 echo run the solimport.incasso api
-ssh root@$hostname "cd /var/www/${hostname/.*}/; drush cvapi solimport.$api"
-
+run_sol_import_api 'cod' 'incasso'
+}
+main $1
