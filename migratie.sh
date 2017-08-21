@@ -854,7 +854,7 @@ function createtables () {
   INSERT
   INTO    dbasetocivicrm.templan
   VALUES  ( 'Onbekend land'
-          , 'Nederland'
+          , ''
           )
   ,       ( 'Korea Zuid'
           , 'Zuid-Korea'
