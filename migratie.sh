@@ -270,6 +270,33 @@ AND     vmslrel.informatie         != importtable.informatie
 AND     vmslrel.voornaam           != importtable.voornaam
 "
 echo
+echo Update Voornaam en Roepnaam
+mysqlquery "
+INSERT
+INTO    preparetable  ( Contactnummer
+        ,               Voornaam
+        ,               Roepnaam
+        )
+SELECT  f.Contactnummer
+,       f.Voornaam
+,       f.Voornaam
+FROM    preparetable  f
+WHERE   type     != "org"
+AND     Roepnaam  = ""
+AND     Voornaam != ""
+AND     INSTR(  Voornaam
+        ,       '.'
+        )         = 0
+ON      DUPLICATE KEY
+UPDATE  Voornaam  = CONCAT( SUBSTR( f.Voornaam
+                            ,       1
+                            ,       1
+                            )
+                    ,       "."
+                    )
+,       Roepnaam  = f.Voornaam
+"
+echo
 echo Update Voorvoegsel
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
