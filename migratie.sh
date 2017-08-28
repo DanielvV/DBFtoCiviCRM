@@ -370,10 +370,28 @@ WHERE   INSTR(  cod
         ,       'KOR'
         )
 AND     ( INSTR(  cod
+          ,       'K05'
+          )
+  OR      INSTR(  cod
+          ,       'K08'
+          )
+  OR      INSTR(  cod
           ,       'K09'
           )
   OR      INSTR(  cod
           ,       'K12'
+          )
+  OR      INSTR(  cod
+          ,       'K13'
+          )
+  OR      INSTR(  cod
+          ,       'K14'
+          )
+  OR      INSTR(  cod
+          ,       'K15'
+          )
+  OR      INSTR(  cod
+          ,       'K22'
           )
         )
 AND NOT ( INSTR(  cod
@@ -393,10 +411,28 @@ WHERE   INSTR(  cod
         ,       'KOR'
         )
 AND NOT ( INSTR(  cod
+          ,       'K05'
+          )
+  OR      INSTR(  cod
+          ,       'K08'
+          )
+  OR      INSTR(  cod
           ,       'K09'
           )
   OR      INSTR(  cod
           ,       'K12'
+          )
+  OR      INSTR(  cod
+          ,       'K13'
+          )
+  OR      INSTR(  cod
+          ,       'K14'
+          )
+  OR      INSTR(  cod
+          ,       'K15'
+          )
+  OR      INSTR(  cod
+          ,       'K22'
           )
   OR      INSTR(  cod
           ,       'KDI'
