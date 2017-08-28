@@ -368,10 +368,22 @@ WHERE   INSTR(  cod
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
 SET     Achternaam  = CONCAT_WS(  ' '
-                      ,           Voorvoegsel
-                      ,           Voornaam
-                      ,           Tussenvoegsel
-                      ,           Achternaam
+                      ,           IF( Voorvoegsel = ""
+                                  ,   NULL
+                                  ,   Voorvoegsel
+                                  )
+                      ,           IF( Voornaam = ""
+                                  ,   NULL
+                                  ,   Voornaam
+                                  )
+                      ,           IF( Tussenvoegsel = ""
+                                  ,   NULL
+                                  ,   Tussenvoegsel
+                                  )
+                      ,           IF( Achternaam = ""
+                                  ,   NULL
+                                  ,   Achternaam
+                                  )
                       )
 WHERE   type='org'
 "
