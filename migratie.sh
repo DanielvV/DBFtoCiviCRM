@@ -228,9 +228,31 @@ SELECT  TRIM( LEADING '0'
             )
 ,       importtable.tav
 ,       importtable.inforegel
-,       CONCAT(   importtable.ad1
-        ,         ' '
-        ,         importtable.huisnr
+,       IF( PatIndex( "[^0-9]"
+            ,         importtable.huisnr
+            ) = 0
+        ,   CONCAT(   importtable.ad1
+            ,         ' '
+            ,         importtable.huisnr
+            )
+        ,   CONCAT_WS(' '
+            ,         importtable.ad1
+            ,         MID(  importtable.huisnr
+                      ,     1
+                      ,     PatIndex( "[^0-9]"
+                            ,         importtable.huisnr
+                            ) - 1
+                      )
+            ,         TRIM( BOTH  "-"
+                            FROM  TRIM( BOTH  "/"
+                                        FROM  MID(  importtable.huisnr
+                                                        ,     PatIndex( "[^0-9]"
+                                                              ,         importtable.huisnr
+                                                              )
+                                              )
+                                   )
+                      )
+            )
         )
 ,       importtable.ad1
 ,       importtable.huisnr
@@ -284,6 +306,7 @@ FROM    preparetable  f
 WHERE   type     != "org"
 AND     Roepnaam  = ""
 AND     Voornaam != ""
+AND     Voornaam != "---"
 AND     INSTR(  Voornaam
         ,       '.'
         )         = 0
@@ -1220,6 +1243,7 @@ function dropfunctions () {
   DROP FUNCTION IF EXISTS tnJOIN;
   DROP FUNCTION IF EXISTS eaJOIN;
   DROP FUNCTION IF EXISTS ibJOIN;
+  DROP FUNCTION IF EXISTS PatIndex;
   "
 }
 function createfunctions () {
@@ -1404,6 +1428,23 @@ function createfunctions () {
       LEAVE loop1;
     END LOOP loop1;
     RETURN @r;
+  END
+  //
+  CREATE FUNCTION PatIndex  ( pattern   VARCHAR(255)
+                            , tblString VARCHAR(255)
+                            ) RETURNS   INTEGER
+      DETERMINISTIC
+  BEGIN
+      DECLARE i INTEGER;
+      SET i = 1;
+      loop1: WHILE (i <= LENGTH(tblString)) DO
+          IF SUBSTRING(tblString, i, 1) REGEXP pattern THEN
+              RETURN(i);
+              LEAVE loop1;        
+          END IF;    
+          SET i = i + 1;
+      END WHILE; 
+      RETURN(0);
   END
   //
   DELIMITER ;
