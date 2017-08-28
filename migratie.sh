@@ -63,14 +63,12 @@ mysqlquery "
 SET @query1 = CONCAT(\"
 CREATE TABLE dbasetocivicrm.tempimport AS
 SELECT  ass.*
-,       CONCAT( ass.tit
-              , '/'
-              , ass.na2
-              , '/'
-              , ass.hisn
-              , '/'
-              , ass.na1
-              )       AS  'informatie'
+,       CONCAT_WS(  '/'
+        ,           ass.tit
+        ,           ass.na2
+        ,           ass.hisn
+        ,           ass.na1
+        )             AS  'informatie'
 ,       ( SELECT  SPLIT_STR ( omschrijv
                             , '  '
                             , 1
@@ -121,9 +119,31 @@ SELECT  TRIM(     LEADING '0'
 ,       importtable.tav
 ,       importtable.voornaam  AS  'Roepnaam'
 ,       importtable.inforegel
-,       CONCAT(   importtable.ad1
-        ,         ' '
-        ,         importtable.huisnr
+,       IF( PatIndex( "[^0-9]"
+            ,         importtable.huisnr
+            ) = 0
+        ,   CONCAT_WS(' '
+            ,         importtable.ad1
+            ,         importtable.huisnr
+            )
+        ,   CONCAT_WS(' '
+            ,         importtable.ad1
+            ,         MID(  importtable.huisnr
+                      ,     1
+                      ,     PatIndex( "[^0-9]"
+                            ,         importtable.huisnr
+                            ) - 1
+                      )
+            ,         TRIM( BOTH  "-"
+                            FROM  TRIM( BOTH  "/"
+                                        FROM  MID(  importtable.huisnr
+                                                        ,     PatIndex( "[^0-9]"
+                                                              ,         importtable.huisnr
+                                                              )
+                                              )
+                                   )
+                      )
+            )
         )                     AS  'Straatenhuisnummer'
 ,       importtable.ad1       AS  'Straatnaam'
 ,       importtable.huisnr    AS  'Huisnummer'
@@ -231,8 +251,8 @@ SELECT  TRIM( LEADING '0'
 ,       IF( PatIndex( "[^0-9]"
             ,         importtable.huisnr
             ) = 0
-        ,   CONCAT(   importtable.ad1
-            ,         ' '
+        ,   CONCAT_WS(' '
+            ,         importtable.ad1
             ,         importtable.huisnr
             )
         ,   CONCAT_WS(' '
