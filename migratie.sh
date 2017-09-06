@@ -323,10 +323,10 @@ SELECT  f.Contactnummer
 ,       f.Voornaam
 ,       f.Voornaam
 FROM    preparetable  f
-WHERE   type     != "org"
-AND     Roepnaam  = ""
-AND     Voornaam != ""
-AND     Voornaam != "---"
+WHERE   type     != 'org'
+AND     Roepnaam  = ''
+AND     Voornaam != ''
+AND     Voornaam != '---'
 AND     INSTR(  Voornaam
         ,       '.'
         )         = 0
@@ -335,7 +335,7 @@ UPDATE  Voornaam  = CONCAT( SUBSTR( f.Voornaam
                             ,       1
                             ,       1
                             )
-                    ,       "."
+                    ,       '.'
                     )
 ,       Roepnaam  = f.Voornaam
 "
@@ -388,19 +388,19 @@ WHERE   INSTR(  cod
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
 SET     Achternaam  = CONCAT_WS(  ' '
-                      ,           IF( Voorvoegsel = ""
+                      ,           IF( Voorvoegsel = ''
                                   ,   NULL
                                   ,   Voorvoegsel
                                   )
-                      ,           IF( Voornaam = ""
+                      ,           IF( Voornaam = ''
                                   ,   NULL
                                   ,   Voornaam
                                   )
-                      ,           IF( Tussenvoegsel = ""
+                      ,           IF( Tussenvoegsel = ''
                                   ,   NULL
                                   ,   Tussenvoegsel
                                   )
-                      ,           IF( Achternaam = ""
+                      ,           IF( Achternaam = ''
                                   ,   NULL
                                   ,   Achternaam
                                   )
