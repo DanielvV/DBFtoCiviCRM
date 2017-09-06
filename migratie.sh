@@ -324,7 +324,9 @@ SELECT  f.Contactnummer
 ,       f.Voornaam
 FROM    preparetable  f
 WHERE   type     != 'org'
-AND     Roepnaam  = ''
+AND (   Roepnaam =  ''
+    OR  Roepnaam IS NULL
+    )
 AND     Voornaam != ''
 AND     Voornaam != '---'
 AND     INSTR(  Voornaam
@@ -514,57 +516,66 @@ mysqlquery "
 INSERT
 INTO dbasetocivicrm.preparetable  ( Contactnummer
                                   , type
-                                  , Voornaam
+                                  , Roepnaam
                                   , Tussenvoegsel
                                   , Achternaam
+                                  , Voornaam
                                   )
 VALUES  ( 71
         , 'person'
         , 'Joop'
         , ''
         , 'Buker'
+        , 'J'
         )
 ,       ( 72
         , 'person'
         , 'Daniël'
         , 'van'
         , 'Vuuren'
+        , 'A.D.'
         )
 ,       ( 73
         , 'person'
         , 'Alex'
         , 'van'
         , 'Vuuren'
+        , 'A.C.F.'
         )
 ,       ( 74
         , 'person'
         , 'Wim'
         , ''
         , 'Nelisse'
+        , 'W.'
         )
 ,       ( 75
         , 'person'
         , 'Ariëtte'
         , ''
         , 'Westland'
+        , 'A.'
         )
 ,       ( 76
         , 'person'
         , 'Albert'
         , ''
         , 'Holtvluwer'
+        , 'A.'
         )
 ,       ( 77
         , 'person'
         , 'Bert'
         , ''
         , 'Keizer'
+        , 'B.'
         )
 ,       ( 78
         , 'person'
         , 'Joke'
         , ''
         , 'Keizer'
+        , 'J.'
         )
 "
 echo
