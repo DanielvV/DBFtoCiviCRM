@@ -109,15 +109,15 @@ SELECT  TRIM(     LEADING '0'
         )                     AS  'Contactnummer'
 ,       CAST(     'Vigilant'
                   AS CHAR(32)
-        )                     AS  'Herkomst'
+        )                     AS  'Herkomst contact'
 ,       '00000000'            AS  'Adresvan'
 ,       'person'              AS  'type'
-,       importtable.tit       AS  'Voorvoegsel'
-,       importtable.na2       AS  'Voornaam'
+,       importtable.tit       AS  'Voorvoegsel Persoon'
+,       importtable.na2       AS  'Initialen'
 ,       importtable.hisn      AS  'Tussenvoegsel'
 ,       importtable.na1       AS  'Achternaam'
 ,       importtable.tav
-,       importtable.voornaam  AS  'Roepnaam'
+,       importtable.voornaam  AS  'Voorna(a)m(en)'
 ,       importtable.inforegel
 ,       IF( PatIndex( '[^0-9]'
             ,         importtable.huisnr
@@ -144,7 +144,7 @@ SELECT  TRIM(     LEADING '0'
                                    )
                       )
             )
-        )                     AS  'Straatenhuisnummer'
+        )                     AS  'Straat en huisnummer'
 ,       importtable.ad1       AS  'Straatnaam'
 ,       importtable.huisnr    AS  'Huisnummer'
 ,       importtable.pos       AS  'Postcode'
@@ -204,15 +204,15 @@ echo Add extra contacts
 mysqlquery "
 INSERT
 INTO    dbasetocivicrm.preparetable  ( Adresvan
-                                    , Herkomst
+                                    , \`Herkomst contact\`
                                     , type
-                                    , Voorvoegsel
-                                    , Voornaam
+                                    , \`Voorvoegsel Persoon\`
+                                    , Initialen
                                     , Tussenvoegsel
                                     , Achternaam
                                     , tav
                                     , inforegel
-                                    , Straatenhuisnummer
+                                    , \`Straat en huisnummer\`
                                     , Straatnaam
                                     , Huisnummer
                                     , Postcode
@@ -223,7 +223,7 @@ INTO    dbasetocivicrm.preparetable  ( Adresvan
                                     , Wijzigingsdatum
                                     , Wijziger
                                     , Emailadressen
-                                    , tn1
+                                    , \`1e nummer\`
                                     )
 SELECT  TRIM( LEADING '0'
               FROM    importtable.relatienr
@@ -312,71 +312,71 @@ AND     vmslrel.informatie         != importtable.informatie
 AND     vmslrel.voornaam           != importtable.voornaam
 "
 echo
-echo Update Voornaam en Roepnaam
+echo Update Initialen en Roepnaam
 mysqlquery "
 INSERT
 INTO    preparetable  ( Contactnummer
-        ,               Voornaam
+        ,               Initialen
         ,               Roepnaam
         )
 SELECT  f.Contactnummer
-,       f.Voornaam
-,       f.Voornaam
+,       f.Initialen
+,       f.Initialen
 FROM    preparetable  f
 WHERE   type     != 'org'
 AND (   Roepnaam =  ''
     OR  Roepnaam IS NULL
     )
-AND     Voornaam != ''
-AND     Voornaam != '---'
-AND     INSTR(  Voornaam
+AND     Initialen != ''
+AND     Initialen != '---'
+AND     INSTR(  Initialen
         ,       '.'
         )         = 0
 ON      DUPLICATE KEY
-UPDATE  Voornaam  = CONCAT( SUBSTR( f.Voornaam
+UPDATE  Initialen  = CONCAT( SUBSTR( f.Initialen
                             ,       1
                             ,       1
                             )
                     ,       '.'
                     )
-,       Roepnaam  = f.Voornaam
+,       Roepnaam  = f.Initialen
 "
 echo
-echo Update Voorvoegsel
+echo Update \`Voorvoegsel Persoon\`
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
-SET     Voorvoegsel='Stichting'
-WHERE   Voorvoegsel='Stg.'
+SET     \`Voorvoegsel Persoon\`='Stichting'
+WHERE   \`Voorvoegsel Persoon\`='Stg.'
 "
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
-SET     Voorvoegsel='Redactie'
-WHERE   Voorvoegsel='Red.'
+SET     \`Voorvoegsel Persoon\`='Redactie'
+WHERE   \`Voorvoegsel Persoon\`='Red.'
 "
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
-SET     Voorvoegsel='Vereniging'
-WHERE   Voorvoegsel='Ver.'
+SET     \`Voorvoegsel Persoon\`='Vereniging'
+WHERE   \`Voorvoegsel Persoon\`='Ver.'
 "
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
-SET     Voorvoegsel=''
-WHERE   Voorvoegsel='Diaconie'
+SET     \`Voorvoegsel Persoon\`=''
+WHERE   \`Voorvoegsel Persoon\`='Diaconie'
 "
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
-SET     Voorvoegsel=''
-WHERE   Voorvoegsel='Diakonie'
+SET     \`Voorvoegsel Persoon\`=''
+WHERE   \`Voorvoegsel Persoon\`='Diakonie'
 "
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
-SET     Voorvoegsel='Dhr./Mw.'
-WHERE   Voorvoegsel='Dhr./mw.'
+SET     \`Voorvoegsel Persoon\`='Dhr./Mw.'
+WHERE   \`Voorvoegsel Persoon\`='Dhr./mw.'
 "
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
-SET     Voorvoegsel='Dhr./Mw.'
-WHERE   Voorvoegsel='Dhr./mw'
+SET     \`Voorvoegsel Persoon\`='Dhr./Mw.'
+WHERE   \`Voorvoegsel Persoon\`='Dhr./mw'
 "
 echo
 echo Update contact type of person or organization
@@ -390,13 +390,13 @@ WHERE   INSTR(  cod
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
 SET     Achternaam  = CONCAT_WS(  ' '
-                      ,           IF( Voorvoegsel = ''
+                      ,           IF( \`Voorvoegsel Persoon\` = ''
                                   ,   NULL
-                                  ,   Voorvoegsel
+                                  ,   \`Voorvoegsel Persoon\`
                                   )
-                      ,           IF( Voornaam = ''
+                      ,           IF( Initialen = ''
                                   ,   NULL
-                                  ,   Voornaam
+                                  ,   Initialen
                                   )
                       ,           IF( Tussenvoegsel = ''
                                   ,   NULL
@@ -501,7 +501,7 @@ AND NOT ( INSTR(  cod
 "
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
-SET     Straatenhuisnummer = ''
+SET     \`Straat en huisnummer\` = ''
 ,       Straatnaam = ''
 ,       Huisnummer = ''
 ,       Postcode = ''
@@ -511,7 +511,7 @@ WHERE   INSTR(  cod
         )
 "
 echo
-echo Add contact users for change history
+echo Add contact usersfor change history
 mysqlquery "
 INSERT
 INTO dbasetocivicrm.preparetable  ( Contactnummer
@@ -519,7 +519,7 @@ INTO dbasetocivicrm.preparetable  ( Contactnummer
                                   , Roepnaam
                                   , Tussenvoegsel
                                   , Achternaam
-                                  , Voornaam
+                                  , Initialen
                                   )
 VALUES  ( 71
         , 'person'
@@ -583,11 +583,11 @@ echo Add external id
 mysqlquery "
 ALTER
 TABLE   dbasetocivicrm.preparetable
-ADD     Externe_ID INT(12)
+ADD     \`Externe ID\` INT(12)
 "
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
-SET     Externe_ID = Contactnummer
+SET     \`Externe_ID\` = Contactnummer
 "
 echo
 echo Delete contacts and create them again
@@ -1314,7 +1314,7 @@ function createfunctions () {
     loop1: LOOP
       SET i := i + 1;
       SET @r = CONCAT(@r,\"
-        , SPLIT_STR( importtable.\",y,\", ',', \",i,\" ) AS \",y,i,\"
+        , SPLIT_STR( importtable.\",y,\", ',', \",i,\" ) AS \`\",i,\"e nummer\`
       \");
       IF i < x THEN
         ITERATE loop1;
