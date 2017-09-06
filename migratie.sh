@@ -15,7 +15,7 @@ till=100000
 cividatabase=civicrm
 case $HOSTNAME in
 civicrm)
-  till=10000
+  till=100000000
   ;;
 civicrm2)
   from=28
