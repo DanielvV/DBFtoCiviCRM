@@ -119,7 +119,7 @@ SELECT  TRIM(     LEADING '0'
 ,       importtable.tav
 ,       importtable.voornaam  AS  'Roepnaam'
 ,       importtable.inforegel
-,       IF( PatIndex( "[^0-9]"
+,       IF( PatIndex( '[^0-9]'
             ,         importtable.huisnr
             ) = 0
         ,   CONCAT_WS(' '
@@ -130,14 +130,14 @@ SELECT  TRIM(     LEADING '0'
             ,         importtable.ad1
             ,         MID(  importtable.huisnr
                       ,     1
-                      ,     PatIndex( "[^0-9]"
+                      ,     PatIndex( '[^0-9]'
                             ,         importtable.huisnr
                             ) - 1
                       )
-            ,         TRIM( BOTH  "-"
-                            FROM  TRIM( BOTH  "/"
+            ,         TRIM( BOTH  '-'
+                            FROM  TRIM( BOTH  '/'
                                         FROM  MID(  importtable.huisnr
-                                                        ,     PatIndex( "[^0-9]"
+                                                        ,     PatIndex( '[^0-9]'
                                                               ,         importtable.huisnr
                                                               )
                                               )
@@ -248,7 +248,7 @@ SELECT  TRIM( LEADING '0'
             )
 ,       importtable.tav
 ,       importtable.inforegel
-,       IF( PatIndex( "[^0-9]"
+,       IF( PatIndex( '[^0-9]'
             ,         importtable.huisnr
             ) = 0
         ,   CONCAT_WS(' '
@@ -259,14 +259,14 @@ SELECT  TRIM( LEADING '0'
             ,         importtable.ad1
             ,         MID(  importtable.huisnr
                       ,     1
-                      ,     PatIndex( "[^0-9]"
+                      ,     PatIndex( '[^0-9]'
                             ,         importtable.huisnr
                             ) - 1
                       )
-            ,         TRIM( BOTH  "-"
-                            FROM  TRIM( BOTH  "/"
+            ,         TRIM( BOTH  '-'
+                            FROM  TRIM( BOTH  '/'
                                         FROM  MID(  importtable.huisnr
-                                                        ,     PatIndex( "[^0-9]"
+                                                        ,     PatIndex( '[^0-9]'
                                                               ,         importtable.huisnr
                                                               )
                                               )
