@@ -312,7 +312,7 @@ AND     vmslrel.informatie         != importtable.informatie
 AND     vmslrel.voornaam           != importtable.voornaam
 "
 echo
-echo Update Initialen en Voorna(a)m(en)
+echo Update Initialen en Voorna\(a\)m\(en\)
 mysqlquery "
 INSERT
 INTO    preparetable  ( Contactnummer
