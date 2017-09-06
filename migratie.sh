@@ -312,20 +312,20 @@ AND     vmslrel.informatie         != importtable.informatie
 AND     vmslrel.voornaam           != importtable.voornaam
 "
 echo
-echo Update Initialen en Roepnaam
+echo Update Initialen en Voorna(a)m(en)
 mysqlquery "
 INSERT
 INTO    preparetable  ( Contactnummer
         ,               Initialen
-        ,               Roepnaam
+        ,               \`Voorna(a)m(en)\`
         )
 SELECT  f.Contactnummer
 ,       f.Initialen
 ,       f.Initialen
 FROM    preparetable  f
 WHERE   type     != 'org'
-AND (   Roepnaam =  ''
-    OR  Roepnaam IS NULL
+AND (   \`Voorna(a)m(en)\` =  ''
+    OR  \`Voorna(a)m(en)\` IS NULL
     )
 AND     Initialen != ''
 AND     Initialen != '---'
@@ -339,10 +339,10 @@ UPDATE  Initialen  = CONCAT( SUBSTR( f.Initialen
                             )
                     ,       '.'
                     )
-,       Roepnaam  = f.Initialen
+,       \`Voorna(a)m(en)\`  = f.Initialen
 "
 echo
-echo Update \`Voorvoegsel Persoon\`
+echo Update Voorvoegsel Persoon
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
 SET     \`Voorvoegsel Persoon\`='Stichting'
@@ -516,7 +516,7 @@ mysqlquery "
 INSERT
 INTO dbasetocivicrm.preparetable  ( Contactnummer
                                   , type
-                                  , Roepnaam
+                                  , \`Voorna(a)m(en)\`
                                   , Tussenvoegsel
                                   , Achternaam
                                   , Initialen
@@ -587,7 +587,7 @@ ADD     \`Externe ID\` INT(12)
 "
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
-SET     \`Externe_ID\` = Contactnummer
+SET     \`Externe ID\` = Contactnummer
 "
 echo
 echo Delete contacts and create them again
