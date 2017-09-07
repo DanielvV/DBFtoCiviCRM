@@ -583,11 +583,11 @@ echo Add external id
 mysqlquery "
 ALTER
 TABLE   dbasetocivicrm.preparetable
-ADD     \`Externe ID\` INT(12)
+ADD     \`Externe Id\` INT(12)
 "
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable
-SET     \`Externe ID\` = Contactnummer
+SET     \`Externe Id\` = Contactnummer
 "
 echo
 echo Delete contacts and create them again
