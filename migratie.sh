@@ -10,18 +10,9 @@ user='root'
 pass=''
 database='dbasetocivicrm'
 encoding='CP437'
-from=70
-till=100000
+from=35
+till=100000000
 cividatabase=civicrm
-case $HOSTNAME in
-civicrm)
-  till=100000000
-  ;;
-civicrm2)
-  from=28
-  till=100000000
-  ;;
-esac
 function main () {
   step$1
 }
