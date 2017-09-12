@@ -686,12 +686,6 @@ echo
 echo Create tables
 createtables
 echo
-echo Delete notes from note
-mysqlquery "
-DELETE
-FROM  $cividatabase.civicrm_note
-"
-echo
 echo Create notes in note
 mysqlquery "
 INSERT INTO $cividatabase.civicrm_note(id, entity_table, entity_id, note, contact_id, modified_date, subject, privacy)
