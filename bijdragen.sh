@@ -53,6 +53,7 @@ sed 's/,8800,/,8800 Inkomsten Conferentie,/g' |
 sed 's/,8900,/,8900 Diverse opbrengst,/g' |
 sed 's/,8910,/,8910 Cursusgelden,/g' >> \
 bhboekin.csv
+touch "bhboekin.csv $(date +"%y-%m-%d %H:%M") count: $(expr $(wc -l bhboekin.csv | cut -d ' ' -f 1) - 1)"
 tail -n +2 bhboekin.csv | split --lines=20000 --filter='head -n 1 ${FILE/-*}.csv > ${FILE/-a/-}.csv; cat >> ${FILE/-a/-}.csv' - bhboekin-
 
 exit
