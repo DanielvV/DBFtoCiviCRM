@@ -273,7 +273,9 @@ SELECT  TRIM( LEADING '0'
                   FROM    dbasetocivicrm.templan templan
                   WHERE   templan.old = importtable.lan2
         ), importtable.lan2)
-,       importtable.cod
+,       CONCAT( importtable.cod
+        ,       'AGP'
+        )
 ,       importtable.bdat
 ,       importtable.mutd
 ,       COALESCE( ( SELECT  tempopc.new
@@ -324,7 +326,7 @@ AND     INSTR(  Initialen
         ,       '.'
         )         = 0
 ON      DUPLICATE KEY
-UPDATE  Initialen  = CONCAT( SUBSTR( f.Initialen
+UPDATE  Initialen = CONCAT( SUBSTR( f.Initialen
                             ,       1
                             ,       1
                             )
