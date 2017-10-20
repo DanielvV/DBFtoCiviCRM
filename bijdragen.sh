@@ -2,23 +2,16 @@
 cd "$HOME/SoL"
 echo "payment_instrument,receive_date,boekstuk,financial_type,kostenpl,deb_cred,currency,total_amount,bedragvv,note,document,doc_regel,periode,subadmin,verwerkt,autoboek,doc_totaal,tot_deb,tot_cre,opc,bdat,mutd,tijd,contribution_contact_id,project,aant_dr,fondsboek,banknummer,bankinfo,factuurgrp,bewerking,betaalwyze,bankcode,storno" > \
 bhboekin.csv
-echo "
-  SELECT *
-  FROM BHBOEKIN
-  WHERE SUBSTRING(rekening FROM 1 FOR 1) = 8;
-" | \
-mysql -h $(cat $HOME/GIT/DBFToMySQL/config.php \
-           | grep host \
-           | tail -n 1 \
-           | cut -d "'" -f 2 \
-         ) \
-      -u civicrm \
-      -p$( cat $HOME/GIT/DBFToMySQL/config.php \
-           | grep passwd \
-           | cut -d "'" -f 2 \
-         ) \
-      -N -B -D \
-      dbasetocivicrm |
+ssh root@civicrm.kvm.schreeuwomleven.nl "
+  echo '
+    SELECT *
+    FROM BHBOEKIN
+    WHERE SUBSTRING(rekening FROM 1 FOR 1) = 8;
+  ' | \
+  mysql -u root \
+        -N -B -D \
+        dbasetocivicrm
+" |
 sed 's/,/;/g' |
 sed 's/\t/,/g' |
 sed 's/^POSTBK,\(.*,P,G01010\)/SEPA DD One-off Transaction,\1/g' |

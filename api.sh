@@ -41,19 +41,19 @@ function step4 () {
 }
 function mysqlquery () {
   echo mysqlquery...
-  mysql -h $hostname \
+  ssh root@$hostname "mysql -h $hostname \
         -u civicrm \
         -p$password \
         civicrm \
-        -e "
+        -e '
           SET
           NAMES utf8
           ;
           $1
           ;
-        " \
+        ' \
         2>&1 \
-        | grep -v 'Using a password on the command line interface can be insecure.'
+        | grep -v 'Using a password on the command line interface can be insecure.'"
 }
 function run_sol_import_api() {
   echo Run the solimport.$1 api
@@ -89,37 +89,37 @@ function prepare_sol_import_incasso_table() {
   INSERT
   INTO    $database.tempp01n
   VALUES  ( 8080
-          , '8080 Giften extra actie Ned'
+          , \"8080 Giften extra actie Ned\"
           )
   ,       ( 8085
-          , '8085 Giften Er is Hulp'
+          , \"8085 Giften Er is Hulp\"
           )
   ,       ( 8090
-          , '8090 Giften actie Buitenland'
+          , \"8090 Giften actie Buitenland\"
           )
   ,       ( 8100
-          , '8100 Giften algemeen'
+          , \"8100 Giften algemeen\"
           )
   ,       ( 8110
-          , '8110 Door te betalen'
+          , \"8110 Door te betalen\"
           )
   ,       ( 8200
-          , '8200 Legaten'
+          , \"8200 Legaten\"
           )
   ,       ( 8300
-          , '8300 Sponsorplan'
+          , \"8300 Sponsorplan\"
           )
   ,       ( 8520
-          , '8520 Giften Mars vh Leven'
+          , \"8520 Giften Mars vh Leven\"
           )
   ,       ( 8800
-          , '8800 Inkomsten Conferentie'
+          , \"8800 Inkomsten Conferentie\"
           )
   ,       ( 8900
-          , '8900 Diverse opbrengst'
+          , \"8900 Diverse opbrengst\"
           )
   ,       ( 8910
-          , '8910 Cursusgelden'
+          , \"8910 Cursusgelden\"
           )
   "
   mysqlquery "
@@ -145,10 +145,10 @@ function prepare_sol_import_incasso_table() {
               FROM    $database.tempp01n tempp01n
               WHERE   tempp01n.old = pol.p01n
             )
-          , '8100 Giften algemeen'
+          , \"8100 Giften algemeen\"
           )
   ,       TRIM(
-            LEADING '0'
+            LEADING \"0\"
             FROM    pol.relatienr
           )
   ,       pol.p07
@@ -156,8 +156,8 @@ function prepare_sol_import_incasso_table() {
   ,       pol.p04
   ,       REPLACE(
             pol.tekendatum
-          , '1970-01-01'
-          , '2009-11-01'
+          , \"1970-01-01\"
+          , \"2009-11-01\"
           )
   ,       COALESCE(
             SUBSTR(
@@ -173,30 +173,30 @@ function prepare_sol_import_incasso_table() {
               )
             , -16
             )
-          , ''
+          , \"\"
           )
   ,       DATE(
             CONCAT(
-              '20'
+              \"20\"
             , SUBSTR(
                 pol.vervalper
               , 1
               , 2
               )
-            , '-'
+            , \"-\"
             , SUBSTR(
                 pol.vervalper
               , 3
               , 2
               )
-            , '-26'
+            , \"-26\"
             )
           )
   ,       pol.banknummer
   ,       pol.omschrijv
   FROM    $database.POL pol
   WHERE   pol.verwijderd = 0
-  AND NOT pol.vervalper = ''
+  AND NOT pol.vervalper = \"\"
   "
   mysqlquery "
   DROP TABLE IF EXISTS $database.tempp01n

@@ -1014,6 +1014,9 @@ function createtables () {
   ,       ( 'Nederlandse Antillen'
           , 'Curaçao'
           )
+  ,       ( 'Ned. Antillen, Curaçao'
+          , 'Curaçao'
+          )
   ,       ( 'Nieuw Zeeland'
           , 'Nieuw-Zeeland'
           )
