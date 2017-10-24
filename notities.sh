@@ -5,16 +5,7 @@ function main {
 function mysqlin () {
   echo mysqlin...
   echo "$1" | \
-  mysql -h $(cat $HOME/GIT/DBFToMySQL/config.php \
-             | grep host \
-             | tail -n 1 \
-             | cut -d "'" -f 2 \
-           ) \
-        -u civicrm \
-        -p$( cat $HOME/GIT/DBFToMySQL/config.php \
-             | grep passwd \
-             | cut -d "'" -f 2 \
-           ) \
+  mysql -u civicrm \
         -D \
         dbasetocivicrm
 }
