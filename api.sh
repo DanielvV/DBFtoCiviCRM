@@ -193,8 +193,15 @@ function prepare_sol_import_incasso_table() {
             )
           )
   ,       pol.banknummer
-  ,       pol.omschrijv
+  ,       name.informatie
   FROM    $database.POL pol
+  LEFT
+  JOIN    $database.VMSLREL name
+  ON      pol.banknummer = SUBSTR(
+                             name.sleutelwrd
+                           , 1
+                           , 18
+                           )
   WHERE   pol.verwijderd = 0
   AND NOT pol.vervalper = \"\"
   "
