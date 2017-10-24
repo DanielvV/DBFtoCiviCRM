@@ -11,7 +11,7 @@ function mysqlin () {
 }
 function notities () {
   echo notities...
-  dir=$HOME/SoL/
+  dir=/opt/SoL/
   zip=VNB
   unzip -q $dir$zip.zip \
         -d $dir
