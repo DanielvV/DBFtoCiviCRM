@@ -138,6 +138,7 @@ function prepare_sol_import_incasso_table() {
             , MndtId
             , next_sched_contribution_date
             , iban
+            , account_holder
             , note
             )
   SELECT  COALESCE(
@@ -194,6 +195,7 @@ function prepare_sol_import_incasso_table() {
           )
   ,       pol.banknummer
   ,       name.informatie
+  ,       pol.omschrijv
   FROM    $database.POL pol
   LEFT
   JOIN    $database.VMSLREL name
