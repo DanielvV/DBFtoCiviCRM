@@ -30,7 +30,7 @@ function notities () {
   INSERT INTO notities VALUES
   (0, \"\"\"eerste notitie" > $dir$zip/0first
   echo "\"\"\");" > $dir$zip/Zlast
-  mysqlin "$(cat $dir$zip/* | iconv -f $(cat /opt/GIT/DBFToMySQL/config.php | grep from_encoding | cut -d "'" -f 2) -t UTF-8 | sed "s/\\\\'/'/g; s/'/\\\\'/g; s/ *\"\"\")/')/g; s/\"\"\"/'/g")"
+  mysqlin "$(cat $dir$zip/* | iconv -f $(cat /opt/DBFToMySQL/config.php | grep from_encoding | cut -d "'" -f 2) -t UTF-8 | sed "s/\\\\'/'/g; s/'/\\\\'/g; s/ *\"\"\")/')/g; s/\"\"\"/'/g")"
   rm -r $dir$zip
 }
 main
