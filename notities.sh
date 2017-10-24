@@ -5,7 +5,7 @@ function main {
 function mysqlin () {
   echo mysqlin...
   echo "$1" | \
-  mysql -u civicrm \
+  mysql -u root \
         -D \
         dbasetocivicrm
 }
