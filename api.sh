@@ -215,6 +215,7 @@ function prepare_sol_import_incasso_table() {
                                     )
           )
   ,       name.informatie
+  ,       pol.omschrijv
   FROM    $database.POL pol
   LEFT
   JOIN    $database.VMSLREL name
