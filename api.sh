@@ -77,6 +77,20 @@ function prepare_sol_import_table() {
 function prepare_sol_import_incasso_table() {
   echo Populate the civicrm.sol_import_incasso table
   mysqlquery "
+  DELIMITER //
+  CREATE FUNCTION SPLIT_STR ( x       VARCHAR(255)
+                            , delim   VARCHAR(12)
+                            , pos     INT
+                            ) RETURNS VARCHAR(255) CHARSET utf8 DETERMINISTIC
+  BEGIN 
+      RETURN REPLACE(SUBSTRING(SUBSTRING_INDEX(x, delim, pos),
+         LENGTH(SUBSTRING_INDEX(x, delim, pos -1)) + 1),
+         delim, '');
+  END
+  //
+  DELIMITER ;
+  "
+  mysqlquery "
   DROP TABLE IF EXISTS $database.tempp01n
   "
   mysqlquery "
@@ -138,6 +152,7 @@ function prepare_sol_import_incasso_table() {
             , MndtId
             , next_sched_contribution_date
             , iban
+            , account_holder
             , note
             )
   SELECT  COALESCE(
@@ -193,6 +208,12 @@ function prepare_sol_import_incasso_table() {
             )
           )
   ,       pol.banknummer
+  ,       TRIM( TRAILING  ' '
+                FROM      SPLIT_STR ( name.informatie
+                                    , ';'
+                                    , 1
+                                    )
+          )
   ,       name.informatie
   FROM    $database.POL pol
   LEFT
@@ -204,6 +225,9 @@ function prepare_sol_import_incasso_table() {
                            )
   WHERE   pol.verwijderd = 0
   AND NOT pol.vervalper = \"\"
+  "
+  mysqlquery "
+  DROP FUNCTION IF EXISTS SPLIT_STR
   "
   mysqlquery "
   DROP TABLE IF EXISTS $database.tempp01n
