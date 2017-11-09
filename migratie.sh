@@ -691,8 +691,13 @@ echo
 echo Create notes in note
 mysqlquery "
 INSERT INTO $cividatabase.civicrm_note(id, entity_table, entity_id, note, contact_id, modified_date, subject, privacy)
-SELECT  TRIM( LEADING '0'
-              FROM    hfnotie.bestnummer
+SELECT  CONCAT( 2
+        ,       LPAD( TRIM( LEADING '0'
+                            FROM    hfnotie.bestnummer
+                      )
+                ,     4
+                ,     '0'
+                )
         )                 AS f1
 ,       'civicrm_contact' AS f2
 ,       TRIM( LEADING '0'
