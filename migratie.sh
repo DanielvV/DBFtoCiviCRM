@@ -194,20 +194,21 @@ echo
 echo Fix SYH addresses
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable a
-SET     a.Adresvan = (  SELECT b.relatienr
-                      FROM    dbasetocivicrm.preparetable b
+SET     a.Adresvan = (SELECT b.Contactnummer
+                      FROM    (SELECT Contactnummer, Postcode, \`Straat en huisnummer\`, \`Voorna(a)m(en)\`, cod FROM dbasetocivicrm.preparetable) AS b
                       WHERE   a.Postcode=b.Postcode
-                      AND     a.Huisnummer=b.Huisnummer
+                      AND     a.\`Straat en huisnummer\`=b.\`Straat en huisnummer\`
                       AND     (   INSTR(b.cod, 'SYM')
                               OR  INSTR(b.cod, 'SY1')
                               OR  INSTR(b.cod, 'SSE')
                               OR  INSTR(b.cod, 'SYE')
                               )
                       AND NOT INSTR(b.cod, 'SYH')
-                      AND NOT \`b.Voorna(a)m(en)\` = 'geenSYHhoofdadres'
+                      AND NOT b.\`Voorna(a)m(en)\` = 'geenSYHhoofdadres'
                    )
-,       \`a.Herkomst contact\` = 'Vigilant extra'
+,       a.\`Herkomst contact\` = 'Vigilant extra'
 WHERE   INSTR(a.cod, 'SYH')
+AND NOT INSTR(cod, 'OPA')
 "
 echo
 echo Remove temp \'geenSYHhoofdadres\'
