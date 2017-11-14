@@ -9,10 +9,6 @@ database=$(cat $HOME/GIT/DBFToMySQL/config.php \
           | tail -n 1 \
           | cut -d "'" -f 2 \
         )
-password=$( cat $HOME/GIT/DBFToMySQL/config.php \
-          | grep passwd \
-          | cut -d "'" -f 2 \
-        )
 function main () {
   step$1
 }
@@ -41,9 +37,8 @@ function step4 () {
 }
 function mysqlquery () {
   echo mysqlquery...
-  ssh root@$hostname "mysql -h $hostname \
-        -u civicrm \
-        -p$password \
+  ssh root@$hostname "mysql \
+        -u root \
         civicrm \
         -e '
           SET
