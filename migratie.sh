@@ -194,7 +194,7 @@ echo
 echo Fix SYH addresses
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable a
-SET     Adresvan = (  SELECT b.relatienr
+SET     a.Adresvan = (  SELECT b.relatienr
                       FROM    dbasetocivicrm.preparetable b
                       WHERE   a.Postcode=b.Postcode
                       AND     a.Huisnummer=b.Huisnummer
@@ -206,8 +206,15 @@ SET     Adresvan = (  SELECT b.relatienr
                       AND NOT INSTR(b.cod, 'SYH')
                       AND NOT \`b.Voorna(a)m(en)\` = 'geenSYHhoofdadres'
                    )
-,       \`Herkomst contact\` = 'Vigilant extra'
+,       \`a.Herkomst contact\` = 'Vigilant extra'
 WHERE   INSTR(a.cod, 'SYH')
+"
+echo
+echo Remove temp \'geenSYHhoofdadres\'
+mysqlquery "
+UPDATE  dbasetocivicrm.preparetable
+SET     \`Voorna(a)m(en)\` = ''
+WHERE   \`Voorna(a)m(en)\` = 'geenSYHhoofdadres'
 "
 echo
 echo Add extra contacts
