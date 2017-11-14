@@ -191,10 +191,29 @@ MODIFY
 COLUMN  Contactnummer INT auto_increment
 "
 echo
+echo Fix SYH addresses
+mysqlquery "
+UPDATE  dbasetocivicrm.preparetable a
+SET     Adresvan = (  SELECT b.relatienr
+                      FROM    dbasetocivicrm.preparetable b
+                      WHERE   a.Postcode=b.Postcode
+                      AND     a.Huisnummer=b.Huisnummer
+                      AND     (   INSTR(b.cod, 'SYM')
+                              OR  INSTR(b.cod, 'SY1')
+                              OR  INSTR(b.cod, 'SSE')
+                              OR  INSTR(b.cod, 'SYE')
+                              )
+                      AND NOT INSTR(b.cod, 'SYH')
+                      AND NOT \`b.Voorna(a)m(en)\` = 'geenSYHhoofdadres'
+                   )
+,       \`Herkomst contact\` = 'Vigilant extra'
+WHERE   INSTR(a.cod, 'SYH')
+"
+echo
 echo Add extra contacts
 mysqlquery "
 INSERT
-INTO    dbasetocivicrm.preparetable  ( Adresvan
+INTO    dbasetocivicrm.preparetable ( Adresvan
                                     , \`Herkomst contact\`
                                     , type
                                     , \`Voorvoegsel Persoon\`
