@@ -80,7 +80,7 @@ function prepare_sol_import_incasso_table() {
   BEGIN 
       RETURN REPLACE(SUBSTRING(SUBSTRING_INDEX(x, delim, pos),
          LENGTH(SUBSTRING_INDEX(x, delim, pos -1)) + 1),
-         delim, '');
+         delim, \"\");
   END
   //
   DELIMITER ;
@@ -203,9 +203,9 @@ function prepare_sol_import_incasso_table() {
             )
           )
   ,       pol.banknummer
-  ,       TRIM( TRAILING  ' '
+  ,       TRIM( TRAILING  \" \"
                 FROM      SPLIT_STR ( name.informatie
-                                    , ';'
+                                    , \";\"
                                     , 1
                                     )
           )
