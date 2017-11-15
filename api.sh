@@ -209,7 +209,6 @@ function prepare_sol_import_incasso_table() {
                                     , 1
                                     )
           )
-  ,       name.informatie
   ,       pol.omschrijv
   FROM    $database.POL pol
   LEFT
