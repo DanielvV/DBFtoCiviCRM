@@ -802,6 +802,13 @@ mysqlquery "
 CALL INSERT_BANK_ACCOUNT_REFERENCES(5)
 "
 echo
+echo Make first phonenumber primary
+mysqlquery "
+UPDATE  civicrm_phone
+SET     is_primary    = 1
+WHERE   phone_type_id = 1
+"
+echo
 echo Drop indexes, tables, procedures and functions
 dropindexes
 droptables
