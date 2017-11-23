@@ -128,9 +128,9 @@ SELECT  TRIM(     LEADING '0'
             ,         TRIM( BOTH  '-'
                             FROM  TRIM( BOTH  '/'
                                         FROM  MID(  importtable.huisnr
-                                                        ,     PatIndex( '[^0-9]'
-                                                              ,         importtable.huisnr
-                                                              )
+                                              ,     PatIndex( '[^0-9]'
+                                                    ,         importtable.huisnr
+                                                    )
                                               )
                                    )
                       )
@@ -284,9 +284,9 @@ SELECT  TRIM( LEADING '0'
             ,         TRIM( BOTH  '-'
                             FROM  TRIM( BOTH  '/'
                                         FROM  MID(  importtable.huisnr
-                                                        ,     PatIndex( '[^0-9]'
-                                                              ,         importtable.huisnr
-                                                              )
+                                              ,     PatIndex( '[^0-9]'
+                                                    ,         importtable.huisnr
+                                                    )
                                               )
                                    )
                       )

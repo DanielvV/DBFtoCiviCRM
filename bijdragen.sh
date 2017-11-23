@@ -6,7 +6,35 @@ ssh root@civicrm.kvm.schreeuwomleven.nl "
   echo '
     SELECT *
     FROM BHBOEKIN
-    WHERE SUBSTRING(rekening FROM 1 FOR 1) = 8;
+    WHERE SUBSTRING(rekening FROM 1 FOR 1) = 8
+    AND NOT ( dagboek = \"MEMO\")
+    AND NOT ( dagboek = \"KAS\"
+              AND deb_cred = \"D\"
+            )
+    AND NOT ( dagboek = \"INKOOP\"
+              AND NOT ( (   INSTR(omschrijv, \"Teveel\")
+                        OR  INSTR(omschrijv, \"Corr.\")
+                        OR  INSTR(omschrijv, \"Coll.\")
+                        OR  INSTR(omschrijv, \"corri\")
+                        OR  INSTR(omschrijv, \"Ontv.\")
+                        OR  INSTR(omschrijv, \"ontv.\")
+                        OR  INSTR(omschrijv, \"erug\")
+                        OR  INSTR(omschrijv, \"voetjes\")
+                        OR  INSTR(omschrijv, \"Gift Bri\")
+                        OR  INSTR(omschrijv, \"Overgem.\")
+                        OR  INSTR(omschrijv, \"Onvoldoende\")
+                        OR  INSTR(omschrijv, \"Acceptgiro\")
+                        OR  INSTR(omschrijv, \"Dubbele\")
+                        OR  INSTR(omschrijv, \"machtiging\")
+                        OR  INSTR(omschrijv, \"Groep 2x\")
+                        )
+                      AND NOT (   INSTR(omschrijv, \"tbv\")
+                              OR  INSTR(omschrijv, \"t.b.v.\")
+                              OR  INSTR(omschrijv, \"Saldo ontv. giften\")
+                              OR  INSTR(omschrijv, \"L voor E\")
+                              )
+                      )
+            );
   ' | \
   mysql -u root \
         -N -B -D \
@@ -18,7 +46,6 @@ sed 's/^POSTBK,\(.*,P,G01010\)/SEPA DD One-off Transaction,\1/g' |
 sed 's/^POSTBK,/Bank,/g' |
 sed 's/^ABN-AM,/Bank,/g' |
 sed 's/^INKOOP,/Bank,/g' |
-sed 's/^MEMO,/Bank,/g' |
 sed 's/^KAS,/Kas,/g' |
 sed 's/,D,[A-Z]\{3\},/&-/g' |
 sed 's/,0000001,/,2,/g' |
@@ -50,6 +77,7 @@ touch "bhboekin.csv $(date +"%y-%m-%d %H:%M") count: $(expr $(wc -l bhboekin.csv
 tail -n +2 bhboekin.csv | split --lines=20000 --filter='head -n 1 ${FILE/-*}.csv > ${FILE/-a/-}.csv; cat >> ${FILE/-a/-}.csv' - bhboekin-
 
 exit
+
 
 
 bdat, mutd en opc naar log?
