@@ -759,7 +759,6 @@ WHERE   SUBSTR( hfnotie.sleutel
         ,       1
         ,       3
         ) = 'ass'
-AND     contact.source = 'Vigilant'
 "
 echo
 echo Insert modified_date for all notes in log
