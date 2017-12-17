@@ -195,7 +195,7 @@ echo Fix SYH addresses
 mysqlquery "
 UPDATE  dbasetocivicrm.preparetable a
 SET     a.Adresvan = (SELECT b.Contactnummer
-                      FROM    (SELECT Contactnummer, Postcode, \`Straat en huisnummer\`, \`Voorna(a)m(en)\`, cod FROM dbasetocivicrm.preparetable) AS b
+                      FROM    (SELECT Contactnummer, Postcode, \`Straat en huisnummer\`, \`Voorna(a)m(en)\`, \`Herkomst contact\`, cod FROM dbasetocivicrm.preparetable) AS b
                       WHERE   a.Postcode=b.Postcode
                       AND     a.\`Straat en huisnummer\`=b.\`Straat en huisnummer\`
                       AND     (   INSTR(b.cod, 'SYM')
@@ -205,6 +205,7 @@ SET     a.Adresvan = (SELECT b.Contactnummer
                               )
                       AND NOT INSTR(b.cod, 'SYH')
                       AND NOT b.\`Voorna(a)m(en)\` = 'geenSYHhoofdadres'
+                      AND NOT b.\`Herkomst contact\` = 'Vigilant extra'
                    )
 ,       a.\`Herkomst contact\` = 'Vigilant extra'
 WHERE   INSTR(a.cod, 'SYH')
