@@ -4,7 +4,13 @@ function main {
 }
 function mysqlin () {
   echo mysqlin...
-  echo "$1" | \
+  echo "
+    SET
+    NAMES utf8
+    ;
+    $1
+    ;
+  " | \
   mysql -u root \
         -D \
         dbasetocivicrm
@@ -23,14 +29,13 @@ function notities () {
   done
   echo -n "
   DROP TABLE IF EXISTS notities;
-  CHARSET utf8;
   CREATE TABLE notities (
     id      int(10) UNSIGNED NOT NULL        COMMENT \"\"\"ID notities\"\"\",
     notitie text    COLLATE  utf8_unicode_ci COMMENT \"\"\"Note and/or Comment.\"\"\"
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
   INSERT INTO notities VALUES
   (0, \"\"\"eerste notitie" > $dir$zip/0first
-  echo "\"\"\");" > $dir$zip/Zlast
+  echo "\"\"\")" > $dir$zip/Zlast
   mysqlin "$(cat $dir$zip/* | iconv -f $(cat /opt/DBFToMySQL/config.php | grep from_encoding | cut -d "'" -f 2) -t UTF-8 | sed "s/\\\\'/'/g; s/'/\\\\'/g; s/ *\"\"\")/')/g; s/\"\"\"/'/g")"
   rm -r $dir$zip
 }
