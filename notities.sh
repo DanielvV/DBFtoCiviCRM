@@ -23,6 +23,7 @@ function notities () {
   done
   echo -n "
   DROP TABLE IF EXISTS notities;
+  CHARSET utf8;
   CREATE TABLE notities (
     id      int(10) UNSIGNED NOT NULL        COMMENT \"\"\"ID notities\"\"\",
     notitie text    COLLATE  utf8_unicode_ci COMMENT \"\"\"Note and/or Comment.\"\"\"
